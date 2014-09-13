@@ -22,6 +22,8 @@
 
 \noindent Kaksisuuntaisuus ei kuitenkaan ole ainoa kirjallisuudessa esiintyvä nopeutustekniikka: vuonna 2003 Meyer et al. esittivät $\Delta$-stepping algoritmin \cite{Meyer98}, joka $2^{19}$ solmun harvalla (engl. \textit{sparse}) verkolla oli noin 3.1 kertaa nopeampi kuin optimoitu Dijkstran algoritmin, ja 16:n suorittimen koneessa rinnakkainen $\Delta$-stepping oli 9.2 kertaa nopeampi kuin peräkkäinen versionsa. Toinen huomionarvoinen nopeutustekniikka on vuonna 2007 esitetty \textit{Dijkstra with arc-flags}\cite{Mohring07}, jonka ideana on osittaa verkon solmut $V$ komponentteihin $V_1, \dots, V_n$ siten, että $\cup_{i = 1}^n V_i = V$ ja $V_i \cap V_j = \varnothing$ kaikilla $i \neq j$, ja jokaiselle suunnatulle kaarelle liittää bittivektorin, jonka $i$:s bitti on päällä jos ja vain jos kyseinen kaari on lyhimmällä polulla johonkin osion $V_i$ solmuun. Ne verkon solmut $u$, joista lähtee edes yksi kaari solmuun $v$ siten, että $u$ ja $v$ eivät ole samassa osiossa sanotaan \textit{rajasolmuiksi}, ja verkon esikäsittelyssä järjestelmä rakentaa lyhimpien polkujen puut jokaisesta rajasolmusta, jolloin on toivottava minimoida rajasolmujen määrää: $kd$-puualgoritmi on helppo toteuttaa, mutta ei onnistu minimoimaan rajasolmuja niin hyvin, kuin METIS \cite{Karypis98}, joka ei edes tarvitse solmujen koordinaatteja kuin $kd$-puu. Yhdessä kaksisuuntaisuuden ja kahden tason METIS-osituksen kanssa -- jossa myös jokainen osio on osioitu pienempiin solmujoukkoihin -- Möhring et al. raportoivat keskimäärin yli 500 kertaa nopeammat polunhakuoperaatiot verrattuna alkuperäiseen Dijkstran algoritmiin.
 
+%comment
+
 \bibliographystyle{plain}
 \bibliography{refs}
 
