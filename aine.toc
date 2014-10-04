@@ -1,0 +1,10 @@
+\select@language {finnish}
+\contentsline {section}{\numberline {1}Johdanto}{1}{section.1}
+\contentsline {section}{\numberline {2}Tavallisimmat algoritmit}{1}{section.2}
+\contentsline {section}{\numberline {3}Kaksisuuntainen haku}{1}{section.3}
+\contentsline {section}{\numberline {4}Prioriteettijonon valinta}{1}{section.4}
+\contentsline {section}{L\IeC {\"a}hteet}{2}{section*.3}
+\select@language {finnish}
+\select@language {finnish}
+\select@language {finnish}
+\select@language {finnish}
