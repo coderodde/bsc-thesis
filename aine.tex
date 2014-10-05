@@ -130,7 +130,7 @@
 \mainmatter       % clear page, start arabic page numbering
 
 \section{Johdanto}
-Polunhaku painotetuissa tai painottamattomissa verkoissa on perustavanlaatuinen ongelma, joka ei ole mielenkiintoinen vain itsessään, vaan on toisinaan tarvittava alioperaatio muissa algoritmeissa. Esimerkiksi Edmond-Karpin algoritmi käyttää leveyssuuntaisen haun ratkaistaessaan maksimivuo-ongelmaa; multiple sequence alignment -ongelmaa on ruvettu viime vuosikymmeninä ratkomaan heuristisin polunhakualgoritmein.
+Polunhaku painotetuissa tai painottamattomissa verkoissa on perustavanlaatuinen ongelma, joka ei ole mielenkiintoinen vain itsessään, vaan on toisinaan tarvittava alioperaatio muissa algoritmeissa. Esimerkiksi Edmond-Karpin algoritmi käyttää leveyssuuntaisen haun ratkaistaessaan maksimivuo-ongelmaa; multiple sequence alignment -ongelmaa on ruvettu viime vuosikymmeninä ratkomaan myös heuristisin polunhakualgoritmein.
 
 Verkoista puhuttaessa verkko $G$ on kaksikko $(V, A)$, jossa $V$ on solmujen joukko, ja $A \subset V \times V$ on (suunnattujen) kaarien joukko. Suuntaamaton verkko $G' = (V, E)$ voidaan aina simuloida suunnatulla verkolla $G= (V, A)$ siten, että jokaista suuntaamatonta kaarta $\{ u, v \} \in E$ kohti laitetaan $A$:han kaaret $(u, v)$ ja $(v, u)$. (Suunnattu verkko on suuntamattoman yleistys.) Polunhakua varten, verkosta erotellaan kaksi solmua: lähtösolmu $s$ ja maalisolmu $t$. Jatkossa, $n = |V|$ ja $m = |E|$; näin esimerkiksi leveyssuuntaisen haun aikavaativuus on $O(n + m)$. Polku on $\gamma_k = \langle u_0, u_1, \dots, u_k \rangle$, missä mikään solmu ei esiinny yhtä kertaa enempää, ja verkossa on kaari $(u_i, u_{i + 1})$ jokaisella $i = 0, 1, \dots, k - 1$. Polkuun liittyvä kustannus on sen kaarien painojen summa, ja mitä tulee itse painoihin, ne oletetaan olevan ei-negatiivisia. Ei-painotettujen verkojen kohdalla, jokaisen kaaren paino oletetaan olevan 1.
 
@@ -144,19 +144,31 @@ Verkoista puhuttaessa verkko $G$ on kaksikko $(V, A)$, jossa $V$ on solmujen jou
 %
 % instead.
 \section{Tavallisimmat algoritmit}
-Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa \cite{Dijkstra59}. Algoritmi voidaan pitää yhdistävän ``ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan $A\ast$-algoritminsa,  amoin kuten Djikstran algoritmi, $A\ast$ ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta.
+Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa \cite{Dijkstra59}. Algoritmi voidaan pitää yhdistävän ``ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan $A\ast$-algoritminsa,  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta \cite{Hart68}. Erona on kuitenkin se, että $A\ast$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvo, joka on siis $f(u) = g(u) + h(u)$, jossa $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että $A\ast$ ``tietää'' mihin suuntaan haku on suunnattava, jota pääsisi maalisolmuun, ainakin parempi kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ``kaikkiin suuntiin''.
 
 \section{Kaksisuuntainen haku}
+Vaikka $A\ast$ on tyypillisesti tehokkaampi kuin Dijkstran algoritmi, käyttämällä \textit{kaksisuuntaista} hakua, voidaan päästää verrattavissa olevaan suorituskykyyn. Ajatus kaksisuuntaisuuden takana on se, että algoritmi kasvattaa kaksi hakupuuta, yksi normaaliin tapaan ja toinen maalisolmusta ihan kuin kaaret olisivat ``käännetty'' päinvastaiseen suuntaan, kunnes kaksi hakuavaruutta ``kohtaavat'' keskellä. Nyt jos lyhin polku koostuu $N$ kaaresta, ja verkon solmujen keskiarvoinen aste on $d$, tavallinen, eli yksisuuntainen haku tekee työn
+\[
+\sum_{i = 0}^N d^i,
+\]
+kun kaksisuuntainen olisi tehnyt vain
+\[
+2 \sum_{i = 0}^{\lceil N / 2 \rceil} d^i.
+\]
+Ylläoleva pätee leveyssuuntaiseen hakuun sellaisenaan, ja painotetun haun kohdalla voidaan saada yläraja kertomalla kunkin summan termin tekijällä $O(\log n)$. 
+\subsection{Kaksisuuntainen Dijkstran algoritmi}
+
+\subsection{Kaksisuuntainen $A\ast$}
 
 \section{Prioriteettijonon valinta}
 Polkua hakiessa painotetuissa verkoissa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
 \begin{enumerate}
 \item \textsc{Insert}$(H, x, k)$ tallettaakseen solmun $x$ sen prioriteetin $k$ kera,
 \item \textsc{Decrease-Key}$(H, x, k)$ päivittääkseen solmun $x$ talletetun prioriteetin (pienemmäksi),
-\item \textsc{Extract-Minimum}$(H)$ poistaakseen minimiprioriteetin omaava solmu, ja
+\item \textsc{Extract-Minimum}$(H)$ poistaakseen pienimmän prioriteetin omaava solmu, ja
 \item \textsc{Is-Empty}$(H)$ varmistaakseen, että jonossa on vielä alkioita.
 \end{enumerate}
-Helpoin tehokkaaksi kutsuttu prioriteettijonorakenne (jatkossa vain ``keko'') on binäärikeko, jonka operaatiot 1 - 3 käyvät ajassa $O(\log n)$, jolloin tällaisella keolla Dijkstran ja $A\ast$-algoritmit käyvät kumpikin ajassa $O((m + n) \log n)$. Teoriassa edelläoleva ylläraja voidaan parantaa käyttämällä Fibonacci-kekoa, jonka lisäysoperaatio käy eksaktissa vakioajassa, päivitysoperaatio tasoitetussa vakioajassa, ja poisto-operaatio tasoitetussa ajassa $O(\log n)$, jolloin haut voidaan suorittaa ajassa $O(m + n \log n)$. Huomaa, että kaikki tähän asti mainitut keot perustuvat vertailuihin, ja teoriassa enintään yksi operaatiosta \textsc{Insert} tai \textsc{Extract-Minimum} voi käydä (eksaktissa tai tasoitetussa) vakioajassa, ja toisen on käyttävä ajassa $\Omega(\log n)$, koska muuten algoritmi \ref{genheapsort} tällaisella keolla rikkoisi lajittelemisen informaatioteoreettisen rajan, joka on $\Omega(n \log n)$.
+Helpoin tehokkaaksi kutsuttu prioriteettijonorakenne (jatkossa vain ``keko'') on binäärikeko, jonka operaatiot (1) - (3) käyvät ajassa $O(\log n)$, jolloin tällaisella keolla Dijkstran ja $A\ast$-algoritmit käyvät kumpikin ajassa $O((m + n) \log n)$. Teoriassa edelläoleva ylläraja voidaan parantaa käyttämällä Fibonacci-kekoa, jonka lisäysoperaatio (1) käy eksaktissa vakioajassa, päivitysoperaatio (2) tasoitetussa vakioajassa, ja poisto-operaatio (3) tasoitetussa ajassa $O(\log n)$, jolloin haut voidaan suorittaa ajassa $O(m + n \log n)$. Huomaa, että kaikki tähän asti mainitut keot perustuvat vertailuihin, ja teoriassa enintään yksi operaatiosta \textsc{Insert} tai \textsc{Extract-Minimum} voi käydä (eksaktissa tai tasoitetussa) vakioajassa, ja toisen on käyttävä ajassa $\Omega(\log n)$, koska muuten algoritmi \ref{genheapsort} tällaisella keolla rikkoisi lajittelemisen informaatioteoreettisen rajan, joka on $\Omega(n \log n)$.
 \begin{finalgo}
 $H = \varnothing: \text{tyhjennä keko.}$ \\
 \For{i = 1 \emph{\KwTo} |S|}{
@@ -169,7 +181,10 @@ $H = \varnothing: \text{tyhjennä keko.}$ \\
 \label{genheapsort}
 \end{finalgo}
 Jos kuitenkin kaarien painot ovat kokonaislukuja, $O(m + n \log n)$-rajaa voidaan parantaa:
-Mikkel Thorup esitti vuonna 2003 keon, jonka poisto-operaatio käy ajassa $O(\log \log \min \{ n, N \}$, missä $N$ on maksimiprioriteetti, ja muut opeaatiot vakioajassa, jolloin haun aikavaativuus voidaan laskea aikaan $O(m + n \log \log \min \{n, N \}$ \cite{Thorup03}.
+Mikkel Thorup esitti vuonna 2003 keon, jonka poisto-operaatio käy ajassa $O(\log \log \min n)$ ja muut operaatiot vakioajassa \cite{Thorup03}. Jos kuitenkin kokonaislukupainot ovat väliltä $[0, N)$, poisto-operaatio voidaan suorittaa ajassa $O(\log \log \min \{ n, N \})$. Nyt selvästi haun aikavaativuus tällaisella keolla on $O(m + n \log \log \min \{n, N \})$.
+
+\section{Kaikkien parien lyhimmät polut}
+
 \bibliographystyle{babplain-lf}
 \bibliography{refs}
 
