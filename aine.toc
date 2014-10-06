@@ -2,11 +2,11 @@
 \contentsline {section}{\numberline {1}Johdanto}{1}{section.1}
 \contentsline {section}{\numberline {2}Tavallisimmat algoritmit}{1}{section.2}
 \contentsline {section}{\numberline {3}Kaksisuuntainen haku}{2}{section.3}
-\contentsline {subsection}{\numberline {3.1}Kaksisuuntainen Dijkstran algoritmi}{2}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Kaksisuuntainen $A\ast $}{2}{subsection.3.2}
-\contentsline {section}{\numberline {4}Prioriteettijonon valinta}{2}{section.4}
-\contentsline {section}{\numberline {5}Kaikkien parien lyhimm\IeC {\"a}t polut}{3}{section.5}
-\contentsline {section}{L\IeC {\"a}hteet}{3}{section*.4}
+\contentsline {subsection}{\numberline {3.1}Kaksisuuntainen Dijkstran algoritmi}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Kaksisuuntainen $A\ast $}{3}{subsection.3.2}
+\contentsline {section}{\numberline {4}Prioriteettijonon valinta}{3}{section.4}
+\contentsline {section}{\numberline {5}Kaikkien parien lyhimm\IeC {\"a}t polut}{4}{section.5}
+\contentsline {section}{L\IeC {\"a}hteet}{4}{section*.5}
 \select@language {finnish}
 \select@language {finnish}
 \select@language {finnish}

@@ -31,13 +31,18 @@
 \usepackage{microtype}
 \usepackage{amsfonts,amsmath,amssymb,amsthm,booktabs,color,enumitem,graphicx}
 \usepackage[pdftex,hidelinks]{hyperref}
-\usepackage[ruled,vlined]{algorithm2e}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usepackage{caption}
 
+% Algorithm2e environment with "Algoritmi"-caption.
 \newenvironment{finalgo}[1][htb]{
   \renewcommand{\algorithmcfname}{Algoritmi}
   \begin{algorithm}[#1]
 }{\end{algorithm}}
+
+% To be able to not numbering individual lines:
+\let\oldnl\nl% Store \nl in \oldnl
+\newcommand{\nonl}{\renewcommand{\nl}{\let\nl\oldnl}}
 
 % Automatically set the PDF metadata fields
 \makeatletter
@@ -157,9 +162,48 @@ $\pi = \{ (s, \textbf{nil}) \}$ \\
  \If{$x \textbf{\emph{ is }} t$}{
    \KwRet \textsc{Traceback-Path$(t, \pi, \textbf{nil})$}\\
  }
+ CLOSED = CLOSED $\cup \{ x \}$ \\
+ \nonl Jokaisella solmun $x$ lapsisolmulla $u$, tee... \\
+ \For{$(x, u) \in G.A$}{
+   \If{$u \in $ CLOSED}{
+     $\textbf{continue}$ \\
+   }
+   $g' = g(x) + w(x, u)$ \\
+   \uIf{$u \not \in $ OPEN}{
+     OPEN $=$ OPEN $\cup \{ u \}$ \\
+     $g(u) = g'$ \\
+     $\pi(u) = x$ \\
+   }
+   \uElseIf{$g(u) > g'$}{
+     $g(u) = g'$ \\
+     $\pi(u) = x$ \\
+   }
+ }
 }
-\caption{\textsc{Dijkstra-Shortest-Path}$(s, t)$}
+\nonl Ei $s, t$ -polkua verkossa $G$. \\
+\KwRet $\langle \rangle$ \\
+\caption{\textsc{Dijkstra-Shortest-Path}$(G, s, t, w)$}
 \end{finalgo}
+
+\begin{finalgo}
+$u = x$ \\
+$p = \langle  \rangle$ \\
+\While{$u \textbf{\emph{ is not nil}}$}{
+prepend $u$ to $p$ \\
+$u = \pi(u)$
+}
+\nonl Kaksisuuntainen haku? \\
+\If{$\pi_{REV} \textbf{\emph{ is not nil}}$}{
+  $u = \pi_{REV}(x)$ \\
+  \While{$u \textbf{\emph{ is not nil}}$}{
+    append $u$ to $p$ \\
+    $u = \pi_{REV}(u)$ \\
+  }
+}
+\KwRet $p$ \\
+\caption{\textsc{Traceback-Path}$(x, \pi, \pi_{REV})$}
+\end{finalgo}
+
 \section{Kaksisuuntainen haku}
 Vaikka $A\ast$ on tyypillisesti tehokkaampi kuin Dijkstran algoritmi, käyttämällä \textit{kaksisuuntaista} hakua, voidaan päästää verrattavissa olevaan suorituskykyyn. Ajatus kaksisuuntaisuuden takana on se, että algoritmi kasvattaa kaksi hakupuuta, yksi normaaliin tapaan ja toinen maalisolmusta ihan kuin kaaret olisivat ``käännetty'' päinvastaiseen suuntaan, kunnes kaksi hakuavaruutta ``kohtaavat'' keskellä. Nyt jos lyhin polku koostuu $N$ kaaresta, ja verkon solmujen keskiarvoinen aste on $d$, tavallinen, eli yksisuuntainen haku tekee työn
 \[
