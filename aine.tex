@@ -183,8 +183,9 @@ $\pi = \{ (s, \textbf{nil}) \}$ \\
 \nonl Ei $s, t$ -polkua verkossa $G$. \\
 \KwRet $\langle \rangle$ \\
 \caption{\textsc{Dijkstra-Shortest-Path}$(G, s, t, w)$}
+\label{Dijkstra}
 \end{finalgo}
-
+$A\ast$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin \ref{Dijkstra}, paitsi että rivillä 6 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. 
 \begin{finalgo}
 $u = x$ \\
 $p = \langle  \rangle$ \\
