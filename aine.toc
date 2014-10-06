@@ -6,7 +6,7 @@
 \contentsline {subsection}{\numberline {3.2}Kaksisuuntainen $A\ast $}{3}{subsection.3.2}
 \contentsline {section}{\numberline {4}Prioriteettijonon valinta}{3}{section.4}
 \contentsline {section}{\numberline {5}Kaikkien parien lyhimm\IeC {\"a}t polut}{4}{section.5}
-\contentsline {section}{L\IeC {\"a}hteet}{4}{section*.5}
+\contentsline {section}{L\IeC {\"a}hteet}{4}{section*.6}
 \select@language {finnish}
 \select@language {finnish}
 \select@language {finnish}

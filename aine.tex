@@ -150,12 +150,10 @@ Verkoista puhuttaessa verkko $G$ on kaksikko $(V, A)$, jossa $V$ on solmujen jou
 %
 % instead.
 \section{Tavallisimmat algoritmit}
-Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa \cite{Dijkstra59}. Algoritmi voidaan pitää yhdistävän ``ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan $A\ast$-algoritminsa,  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta \cite{Hart68}. Erona on kuitenkin se, että $A\ast$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvo, joka on siis $f(u) = g(u) + h(u)$, jossa $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että $A\ast$ ``tietää'' mihin suuntaan haku on suunnattava, jota pääsisi maalisolmuun, ainakin parempi kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ``kaikkiin suuntiin''.
+Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa \cite{Dijkstra59}. Algoritmi voidaan pitää yhdistävän ``ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan $A\ast$-algoritminsa,  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta \cite{Hart68}. Erona on kuitenkin se, että $A\ast$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvo, joka on siis $f(u) = g(u) + h(u)$, jossa $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että $A\ast$ ``tietää'' mihin suuntaan haku on suunnattava, jota pääsisi maalisolmuun, ainakin paremmin kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ``kaikkiin suuntiin''.
 \begin{finalgo}
-$\text{OPEN} = \{ s \}$ \\
-$\text{CLOSED} = \emptyset$ \\
-$g = \{ (s, 0) \}$ \\
-$\pi = \{ (s, \textbf{nil}) \}$ \\
+\nonl Monikkosijoitus: \\
+$\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
 \While{$|\text{OPEN}| > 0$}{
  $u = \underset{x \in \text{OPEN}}{\argmin}\, g(x)$ \\
  $\text{OPEN} = \text{OPEN} - \{ x \}$ \\
@@ -185,19 +183,19 @@ $\pi = \{ (s, \textbf{nil}) \}$ \\
 \caption{\textsc{Dijkstra-Shortest-Path}$(G, s, t, w)$}
 \label{Dijkstra}
 \end{finalgo}
-$A\ast$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin \ref{Dijkstra}, paitsi että rivillä 6 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. 
+$A\ast$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin (Algoritmi \ref{Dijkstra} sivulla \pageref{Dijkstra}), paitsi että rivillä 6 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$.
 \begin{finalgo}
 $u = x$ \\
 $p = \langle  \rangle$ \\
 \While{$u \textbf{\emph{ is not nil}}$}{
-prepend $u$ to $p$ \\
+lisää $u$ $p$:n alkuun \\
 $u = \pi(u)$
 }
 \nonl Kaksisuuntainen haku? \\
 \If{$\pi_{REV} \textbf{\emph{ is not nil}}$}{
   $u = \pi_{REV}(x)$ \\
   \While{$u \textbf{\emph{ is not nil}}$}{
-    append $u$ to $p$ \\
+    lisää $u$ $p$:n loppuun \\
     $u = \pi_{REV}(u)$ \\
   }
 }
@@ -216,6 +214,29 @@ kun kaksisuuntainen olisi tehnyt vain
 \]
 Ylläoleva pätee leveyssuuntaiseen hakuun sellaisenaan, ja painotetun haun kohdalla voidaan saada yläraja kertomalla kunkin summan termin tekijällä $O(\log n)$. 
 \subsection{Kaksisuuntainen Dijkstran algoritmi}
+
+\begin{finalgo}
+$\text{OPEN}, \text{CLOSED}, g, \pi = \{ s \}, \emptyset, \{ (s, 0) \}, \{ (s, \textbf{nil}) \}$ \\
+%$\text{OPEN} = \{ s \}$ \\
+%$\text{CLOSED} = \emptyset$ \\
+%$g = \{ (s, 0) \}$ \\
+%$\pi = \{ (s, \textbf{nil}) \}$ \\
+%$\text{OPEN}_{REV} = \{ t \}$ \\
+%$\text{CLOSED}_{REV} = \emptyset$ \\
+%$g_{REV} = \{ (t, 0) \}$ \\
+%$\pi_{REV} = \{ (t, \textbf{nil}) \}$ \\
+$\text{OPEN}_{REV}, \text{CLOSED}_{REV}, g_{REV}, \pi_{REV} = \{ t \}, \emptyset, \{ (t, 0) \}, \{ (t, \textbf{nil}) \}$ \\
+$\mu = \infty$ \\
+$m = \textbf{nil}$ \\ 
+\While{$|\text{OPEN}| \cdot |\text{OPEN}_{REV}| > 0$}{
+  $p = $ \textsc{Check-Bi-Dijkstra-Termination}$(\text{OPEN}, \text{OPEN}_{REV})$ \\
+  \If{$p$}{
+  
+  }
+}
+\KwRet $\langle  \rangle$ \\
+\caption{\textsc{Bidirectional-Dijkstra-Shortest-Path}$(G, s, t, w)$}
+\end{finalgo}
 
 \subsection{Kaksisuuntainen $A\ast$}
 
