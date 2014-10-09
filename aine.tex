@@ -167,12 +167,12 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
      $\textbf{continue}$ \\
    }
    $g' = g(x) + w(x, u)$ \\
-   \uIf{$u \not \in $ OPEN}{
+   \If{$u \not \in $ OPEN}{
      OPEN $=$ OPEN $\cup \{ u \}$ \\
      $g(u) = g'$ \\
      $\pi(u) = x$ \\
    }
-   \uElseIf{$g(u) > g'$}{
+   \ElseIf{$g(u) > g'$}{
      $g(u) = g'$ \\
      $\pi(u) = x$ \\
    }
@@ -216,42 +216,87 @@ Ylläoleva pätee leveyssuuntaiseen hakuun sellaisenaan, ja painotetun haun kohd
 \subsection{Kaksisuuntainen Dijkstran algoritmi}
 
 \begin{finalgo}
+$u = \underset{x \in \text{OPEN}}{\argmin} \, g(x)$ \\
+\text{OPEN}  = \text{OPEN} - $\{ u \} $ \\
+\text{CLOSED} = \text{CLOSED} $\cup \, \{ u \}$ \\
+\For{$x \in e(u)$}{
+  \If{$x \in \text{CLOSED}$}{
+    \textbf{continue} \\
+  }
+  $g' = g(u)$ \\
+  \If{$e(u) \textbf{\emph{ gives child nodes of }} u$}{
+    \nonl ``Normaali'' haku.\\
+    $g' = g' + w(u, x)$ \\
+  }
+  \Else{
+  \nonl Käännetty haku.\\
+  	$g' = g' + w(x, u)$ \\
+  }
+  \If{$x \in \text{OPEN}$}{
+    $\text{OPEN} = \text{OPEN} \cup \{ x \} $ \\
+    $g(x) = g'$ \\
+    $\pi = x$ \\
+    \textsc{Update}$(x, \text{CLOSED}_2, g', g_2, \mu, m)$ \\
+  }
+  \ElseIf{$g(x) > g'$}{
+    $g(x) = g'$ \\
+    $\pi = x$ \\
+    \textsc{Update}$(x, \text{CLOSED}_2, g', g_2, \mu, m)$ \\
+  }
+}
+\caption{\textsc{Expand}$(\text{OPEN, CLOSED, CLOSED}_2, g, g_2, \pi, \mu, m, e, w)$}
+\end{finalgo}
+
+\begin{finalgo}
+\If{$x \in \text{CLOSED}$}{
+   $p = g' + g(x)$ \\
+   \If{$\mu > p$}{
+     $\mu = p$ \\
+     $m = x$ \\
+   }
+}
+\caption{\textsc{Update}$(x, \text{CLOSED}, g', g, \mu, m)$}
+\end{finalgo}
+
+\begin{finalgo}
 $\text{OPEN}, \text{CLOSED}, g, \pi = \{ s \}, \emptyset, \{ (s, 0) \}, \{ (s, \textbf{nil}) \}$ \\
 $\text{OPEN}_{REV}, \text{CLOSED}_{REV}, g_{REV}, \pi_{REV} = \{ t \}, \emptyset, \{ (t, 0) \}, \{ (t, \textbf{nil}) \}$ \\
 $\mu = \infty$ \\
 $m = \textbf{nil}$ \\ 
 \While{$|\text{OPEN}| \cdot |\text{OPEN}_{REV}| > 0$}{
   \If{$m$ \textbf{\emph{is not nil}}}{
-    $p = $ \textsc{Check-Bi-Dijkstra-Termination}$f_1$ \\
+    $p = $ \textsc{Try-Terminate}$(\text{OPEN})$ \\
     \If{$p$ \textbf{\emph{is not nil}}}{
     	\KwRet $p$
     }
   }
   \nonl Triviaali kuormantasaus \\
   \If{$|\text{OPEN}| < |\text{OPEN}_{REV}|$}{
-    $u = \underset{x \in \text{OPEN}}{\argmin } \, g(x)$ \\
-    $\text{OPEN} = \text{OPEN} - \{ u \} $ \\
-    $\text{CLOSED} = \text{CLOSED} \cup \{ u \} $ \\
-    \For{$(u, x) \in G.A$}{
-      \If{$x$ \textbf{\emph{is in }} $\text{CLOSED}$}{
-        \textbf{continue} \\
-      }
-    }
+	$\textsc{Expand}(\text{OPEN},$ \\
+	$\phantom{\textsc{Expand}(}\text{CLOSED},$ \\
+	$\phantom{\textsc{Expand}(}\textsc{CLOSED}_{REV},$ \\ 
+	$\phantom{\textsc{Expand}(}g, g_{REV}, \pi, \mu, m, e_f, w)$ \\
   }
   \Else{
-    $u = \underset{x \in \text{OPEN}_{REV}}{\argmin} g_{REV}(x)$ \\
-    $\text{OPEN}_{REV} = \text{OPEN}_{REV} - \{ u \} $ \\
-    $\text{CLOSED}_{REV} = \text{CLOSED}_{REV} \cup \{ u \} $ \\
-    \nonl Jokaiselle solmun $u$ vanhempainsolmulle $x$, tee.. \\
-    \For{$(x, u) \in G.A$}{
-      \If{$x$ \textbf{\emph{is in }} $\text{CLOSED}_{REV}$}{
-        \textbf{continue} \\
-      }
-    }
+	$\textsc{Expand}(\text{OPEN}_{REV},$ \\
+	$\phantom{\textsc{Expand}(}\text{CLOSED}_{REV},$ \\
+	$\phantom{\textsc{Expand}(}\textsc{CLOSED},$ \\ 
+	$\phantom{\textsc{Expand}(}g_{REV}, g, \pi_{REV}, \mu, m, e_b, w)$ \\
   }
 }
 \KwRet $\langle  \rangle$ \\
 \caption{\textsc{Bidirectional-Dijkstra-Shortest-Path}$(G, s, t, w)$}
+\end{finalgo}
+Yllä, $e_f$ on kuvaus, jolle $e_f(u) = \{ v \in G.V \colon (u, v) \in G.A \}$ jokaisella $u \in G.V$, ja $e_b(u) = \{ v \in G.V \colon (v, u) \in G.A \}$. Molemmat siis määrittelevät ``laajentumisoperaattorit'' (engl. \textit{expansion operator}): $e_f$ normaalissa haussa, ja $e_b$ käännetyssä haussa.
+
+\begin{finalgo}
+$x_f = \underset{x \in \text{OPEN}}{\argmin g(x)}$ \\
+$x_b = \underset{x \in \text{OPEN}_{REV}}{\argmin g(x)} $ \\ 
+\If{$g(x_f) + g_{REV}(x_b) \geq \mu$}{
+  \KwRet \textsc{Traceback-Path}$(m, \pi, \pi_{REV})$\\
+}
+\emph{\textbf{return nil}} \\
+\caption{\textsc{Try-Terminate}$(\text{OPEN}, \text{OPEN}_{REV}, g, g_{REV}, \pi, \pi_{REV}, \mu, m)$}
 \end{finalgo}
 
 \subsection{Kaksisuuntainen $A\ast$}
