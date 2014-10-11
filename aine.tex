@@ -299,9 +299,7 @@ $m = \textbf{nil}$ \\
 \end{finalgo}
 Yllä, $e_f$ on kuvaus, jolle $e_f(u) = \{ v \in G.V \colon (u, v) \in G.A \}$ jokaisella $u \in G.V$, ja $e_b(u) = \{ v \in G.V \colon (v, u) \in G.A \}$. Molemmat siis määrittelevät ``laajentumisoperaattorit'' (engl. \textit{expansion operator}): $e_f$ normaalissa haussa, ja $e_b$ käännetyssä haussa.
 \begin{finalgo}[H]
-$x_f = \underset{x \in \text{OPEN}}{\argmin g(x)}$ \\
-$x_b = \underset{x \in \text{OPEN}_{REV}}{\argmin g_{REV}(x)} $ \\ 
-\If{$g(x_f) + g_{REV}(x_b) \geq \mu$}{
+\If{$\underset{x \in \text{OPEN}}{\min} g(x) + \underset{x \in \text{OPEN}_{REV}}{\min} g_{REV}(x) \geq \mu$}{
   \KwRet \textsc{Traceback-Path}$(m, \pi, \pi_{REV})$\\
 }
 \KwRet $\textbf{nil}$ \\
@@ -316,9 +314,7 @@ u = \underset{x \in \text{OPEN}}{\argmin f(x)},
 \]
 ja korvaamalla rivin 7 kutsu kutsulla $\textsc{Terminate}\ast(\dots)$, jonka määritelmä on alla.
 \begin{finalgo}[h]
-$x_f = \underset{x \in \text{OPEN}}{\argmin f(x)}$ \\
-$x_b = \underset{x \in \text{OPEN}_{REV}}{\argmin f_{REV}(x)}$ \\
-\If{$\min(f(x_f), f_{REV}(x_b)) \leq \mu$}{
+\If{$\mu \leq \max(\underset{x \in \text{OPEN}}{f(x)}, \underset{x \in \text{OPEN}_{REV}}{f_{REV}(x)})$}{
   \KwRet \textsc{Traceback-Path}$(m, \pi, \pi_{REV})$\\
 }
 \KwRet $\textbf{nil}$ \\
