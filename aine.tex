@@ -33,6 +33,7 @@
 \usepackage[pdftex,hidelinks]{hyperref}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usepackage{caption}
+\usepackage{float}
 
 % Algorithm2e environment with "Algoritmi"-caption.
 \newenvironment{finalgo}[1][htb]{
@@ -151,7 +152,7 @@ Verkoista puhuttaessa verkko $G$ on kaksikko $(V, A)$, jossa $V$ on solmujen jou
 % instead.
 \section{Tavallisimmat algoritmit}
 Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa \cite{Dijkstra59}. Algoritmi voidaan pitää yhdistävän ``ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan $A\ast$-algoritminsa,  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta \cite{Hart68}. Erona on kuitenkin se, että $A\ast$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvo, joka on siis $f(u) = g(u) + h(u)$, jossa $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että $A\ast$ ``tietää'' mihin suuntaan haku on suunnattava, jota pääsisi maalisolmuun, ainakin paremmin kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ``kaikkiin suuntiin''.
-\begin{finalgo}
+\begin{finalgo}[H]
 \nonl Monikkosijoitus \\
 $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
 \While{$|\text{OPEN}| > 0$}{
@@ -160,15 +161,15 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
  \If{$x \textbf{\emph{ is }} t$}{
    \KwRet \textsc{Traceback-Path$(t, \pi, \textbf{nil})$}\\
  }
- CLOSED = CLOSED $\cup \{ x \}$ \\
+ $\text{CLOSED} = \text{CLOSED} \cup \{ x \}$ \\
  \nonl Jokaisella solmun $x$ lapsisolmulla $u$, tee... \\
  \For{$(x, u) \in G.A$}{
-   \If{$u \in $ CLOSED}{
+   \If{$u \in \text{\upshape CLOSED}$}{
      $\textbf{continue}$ \\
    }
    $g' = g(x) + w(x, u)$ \\
-   \If{$u \not \in $ OPEN}{
-     OPEN $=$ OPEN $\cup \{ u \}$ \\
+   \If{$u \not \in \text{\upshape OPEN}$}{
+     $\text{OPEN} = \text{OPEN} \cup \{ u \}$ \\
      $g(u) = g'$ \\
      $\pi(u) = x$ \\
    }
@@ -181,10 +182,11 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
 \nonl Ei $s, t$ -polkua verkossa $G$. \\
 \KwRet $\langle \rangle$ \\
 \caption{\textsc{Dijkstra-Shortest-Path}$(G, s, t, w)$}
+\label{alg:unidijkstra}
 \label{Dijkstra}
 \end{finalgo}
-$A\ast$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin (Algoritmi \ref{Dijkstra} sivulla \pageref{Dijkstra}), paitsi että rivillä 6 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$.
-\begin{finalgo}
+\noindent $A\ast$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin, paitsi että rivillä 3 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. Molemmat kutsuvat \textsc{Traceback-Path}-rutiinia, joka siis muodostaa lyhimmän polun ``edeltäjäpuusta'' (engl. \textit{predecessor tree}) ajassa $\Theta(N)$, missä $N$ on lyhimmän polun solmujen määrä.
+\begin{finalgo}[H]
 $u = x$ \\
 $p = \langle  \rangle$ \\
 \While{$u \textbf{\emph{ is not nil}}$}{
@@ -201,6 +203,7 @@ $u = \pi(u)$
 }
 \KwRet $p$ \\
 \caption{\textsc{Traceback-Path}$(x, \pi, \pi_{REV})$}
+\label{alg:tracebackpath}
 \end{finalgo}
 
 \section{Kaksisuuntainen haku}
@@ -213,9 +216,10 @@ kun kaksisuuntainen olisi tehnyt vain
 2 \sum_{i = 0}^{\lceil N / 2 \rceil} d^i.
 \]
 Ylläoleva pätee leveyssuuntaiseen hakuun sellaisenaan, ja painotetun haun kohdalla voidaan saada yläraja kertomalla kunkin summan termin tekijällä $O(\log n)$. 
-\subsection{Kaksisuuntainen Dijkstran algoritmi}
 
-\begin{finalgo}
+\subsection{Kaksisuuntainen Dijkstran algoritmi}
+Ylläolevan analyysin nojalla, on selvä, että Dijkstran algoritmi hyötyy kaksisuuntaisuudesta, eikä edellytä minkäänlaista verkon esiprosessointia. Lisäksi, algoritmin vahvuutena suhteessa $A\ast$:iin ei ole pelkästään verrattavissa oleva tehokkuus, vaan myös heuristiikkafunktion tarpeettomuus. Alla $\mu$ on toistaiseksi lyhimmän polun kustannus, joka suorituksen alussa on $\infty$. Kun algoritmi löytää toistaiseksi lyhimmän polun hakuavaruuksien kohdatessa, ``välisolmu'' $m$ ja sen implikoiva kustannus $\mu$ päivitetään. Haku jatkuu siihen asti, kunnes molempien avointen listojen minimialkioiden kustannusten summa on vähintään $\mu$. 
+\begin{finalgo}[H]
 $u = \underset{x \in \text{OPEN}}{\argmin} \, g(x)$ \\
 \text{OPEN}  = \text{OPEN} - $\{ u \} $ \\
 \text{CLOSED} = \text{CLOSED} $\cup \, \{ u \}$ \\
@@ -245,9 +249,10 @@ $u = \underset{x \in \text{OPEN}}{\argmin} \, g(x)$ \\
   }
 }
 \caption{\textsc{Expand}$(\text{OPEN, CLOSED, CLOSED}_2, g, g_2, \pi, \mu, m, e, w)$}
+\label{alg:expand}
 \end{finalgo}
 
-\begin{finalgo}
+\begin{finalgo}[H]
 \If{$x \in \text{CLOSED}$}{
    $p = g' + g(x)$ \\
    \If{$\mu > p$}{
@@ -256,16 +261,20 @@ $u = \underset{x \in \text{OPEN}}{\argmin} \, g(x)$ \\
    }
 }
 \caption{\textsc{Update}$(x, \text{CLOSED}, g', g, \mu, m)$}
+\label{alg:update}
 \end{finalgo}
-
-\begin{finalgo}
+Rutiini \textsc{Update} tarkistaa, että yhden hakusuunnan solmu on toisen suljetussa listassa, ja jos asia on niin, yrittää päivittää välisolmun.
+\begin{finalgo}[H]
 $\text{OPEN}, \text{CLOSED}, g, \pi = \{ s \}, \emptyset, \{ (s, 0) \}, \{ (s, \textbf{nil}) \}$ \\
 $\text{OPEN}_{REV}, \text{CLOSED}_{REV}, g_{REV}, \pi_{REV} = \{ t \}, \emptyset, \{ (t, 0) \}, \{ (t, \textbf{nil}) \}$ \\
 $\mu = \infty$ \\
 $m = \textbf{nil}$ \\ 
 \While{$|\text{OPEN}| \cdot |\text{OPEN}_{REV}| > 0$}{
   \If{$m$ \textbf{\emph{is not nil}}}{
-    $p = $ \textsc{Try-Terminate}$(\text{OPEN})$ \\
+    $p = $ \textsc{Terminate}$(\text{OPEN}, \text{OPEN}_{REV},$ \\
+    $\phantom{p = \textsc{Try-Terminate}(} g, g_{REV},$ \\
+    $\phantom{p = \textsc{Try-Terminate}(} \pi, \pi_{REV},$  \\
+    $\phantom{p = \textsc{Try-Terminate}(} \mu, m)$ \\
     \If{$p$ \textbf{\emph{is not nil}}}{
     	\KwRet $p$
     }
@@ -286,20 +295,36 @@ $m = \textbf{nil}$ \\
 }
 \KwRet $\langle  \rangle$ \\
 \caption{\textsc{Bidirectional-Dijkstra-Shortest-Path}$(G, s, t, w)$}
+\label{alg:bidijkstra}
 \end{finalgo}
 Yllä, $e_f$ on kuvaus, jolle $e_f(u) = \{ v \in G.V \colon (u, v) \in G.A \}$ jokaisella $u \in G.V$, ja $e_b(u) = \{ v \in G.V \colon (v, u) \in G.A \}$. Molemmat siis määrittelevät ``laajentumisoperaattorit'' (engl. \textit{expansion operator}): $e_f$ normaalissa haussa, ja $e_b$ käännetyssä haussa.
-
-\begin{finalgo}
+\begin{finalgo}[H]
 $x_f = \underset{x \in \text{OPEN}}{\argmin g(x)}$ \\
-$x_b = \underset{x \in \text{OPEN}_{REV}}{\argmin g(x)} $ \\ 
+$x_b = \underset{x \in \text{OPEN}_{REV}}{\argmin g_{REV}(x)} $ \\ 
 \If{$g(x_f) + g_{REV}(x_b) \geq \mu$}{
   \KwRet \textsc{Traceback-Path}$(m, \pi, \pi_{REV})$\\
 }
-\emph{\textbf{return nil}} \\
-\caption{\textsc{Try-Terminate}$(\text{OPEN}, \text{OPEN}_{REV}, g, g_{REV}, \pi, \pi_{REV}, \mu, m)$}
+\KwRet $\textbf{nil}$ \\
+\caption{\textsc{Terminate}$(\text{OPEN}, \text{OPEN}_{REV}, g, g_{REV}, \pi, \pi_{REV}, \mu, m)$}
+\label{alg:bidijkstraterminate}
 \end{finalgo}
 
 \subsection{Kaksisuuntainen $A\ast$}
+Kaksisuuntaisen $A\ast$:n saa aikaan muuttamalla algoritmin \ref{alg:expand} rivi 1 seuraavanlaiseksi:
+\[
+u = \underset{x \in \text{OPEN}}{\argmin f(x)},
+\]
+ja korvaamalla rivin 7 kutsu kutsulla $\textsc{Terminate}\ast(\dots)$, jonka määritelmä on alla.
+\begin{finalgo}[h]
+$x_f = \underset{x \in \text{OPEN}}{\argmin f(x)}$ \\
+$x_b = \underset{x \in \text{OPEN}_{REV}}{\argmin f_{REV}(x)}$ \\
+\If{$\min(f(x_f), f_{REV}(x_b)) \leq \mu$}{
+  \KwRet \textsc{Traceback-Path}$(m, \pi, \pi_{REV})$\\
+}
+\KwRet $\textbf{nil}$ \\
+\caption{\textsc{Terminate$\ast$}$(\text{OPEN}, \text{OPEN}_{REV}, f, f_{REV}, \pi, \pi_{REV}, \mu, m)$}
+\label{alg:tryterminatestar}
+\end{finalgo}
 
 \section{Prioriteettijonon valinta}
 Polkua hakiessa painotetuissa verkoissa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
@@ -309,17 +334,18 @@ Polkua hakiessa painotetuissa verkoissa joudutaan käyttäämään prioriteettij
 \item \textsc{Extract-Minimum}$(H)$ poistaakseen pienimmän prioriteetin omaava solmu, ja
 \item \textsc{Is-Empty}$(H)$ varmistaakseen, että jonossa on vielä alkioita.
 \end{enumerate}
-Helpoin tehokkaaksi kutsuttu prioriteettijonorakenne (jatkossa vain ``keko'') on binäärikeko, jonka operaatiot (1) - (3) käyvät ajassa $O(\log n)$, jolloin tällaisella keolla Dijkstran ja $A\ast$-algoritmit käyvät kumpikin ajassa $O((m + n) \log n)$. Teoriassa edelläoleva ylläraja voidaan parantaa käyttämällä Fibonacci-kekoa, jonka lisäysoperaatio (1) käy eksaktissa vakioajassa, päivitysoperaatio (2) tasoitetussa vakioajassa, ja poisto-operaatio (3) tasoitetussa ajassa $O(\log n)$, jolloin haut voidaan suorittaa ajassa $O(m + n \log n)$. Huomaa, että kaikki tähän asti mainitut keot perustuvat vertailuihin, ja teoriassa enintään yksi operaatiosta \textsc{Insert} tai \textsc{Extract-Minimum} voi käydä (eksaktissa tai tasoitetussa) vakioajassa, ja toisen on käyttävä ajassa $\Omega(\log n)$, koska muuten algoritmi \ref{genheapsort} tällaisella keolla rikkoisi lajittelemisen informaatioteoreettisen rajan, joka on $\Omega(n \log n)$.
+Helpoin tehokkaaksi kutsuttu prioriteettijonorakenne (jatkossa vain ``keko'') on binäärikeko, jonka operaatiot (1) - (3) käyvät ajassa $O(\log n)$, jolloin tällaisella keolla Dijkstran ja $A\ast$-algoritmit käyvät kumpikin ajassa $O((m + n) \log n)$. Teoriassa edelläoleva ylläraja voidaan parantaa käyttämällä Fibonacci-kekoa, jonka lisäysoperaatio (1) käy eksaktissa vakioajassa, päivitysoperaatio (2) tasoitetussa vakioajassa, ja poisto-operaatio (3) tasoitetussa ajassa $O(\log n)$, jolloin haut voidaan suorittaa ajassa $O(m + n \log n)$. Huomaa, että kaikki tähän asti mainitut keot perustuvat vertailuihin, ja teoriassa enintään yksi operaatiosta \textsc{Insert} tai \textsc{Extract-Minimum} voi käydä (eksaktissa tai tasoitetussa) vakioajassa, ja toisen on käyttävä ajassa $\Omega(\log n)$, koska muuten algoritmi \ref{alg:genheapsort} tällaisella keolla rikkoisi lajittelemisen informaatioteoreettisen rajan, joka on $\Omega(n \log n)$.
 \begin{finalgo}
 $H = \varnothing: \text{tyhjennä keko.}$ \\
 \For{i = 1 \emph{\KwTo} |S|}{
-  \textsc{Insert}$(H, S[i], S[i])$ : $S[i]$ on itsensä prioriteetti. \\
+  \nonl $S[i]$ on itsensä prioriteetti. \\
+  \textsc{Insert}$(H, S[i], S[i])$ \\
 }
 \For{i = 1 \emph{\KwTo} |S|}{
   $S[i] = $\textsc{Extract-Minimum}$(H)$  \\
 }
 \caption{\textsc{Generic-Heap-Sort}($S, H$)}
-\label{genheapsort}
+\label{alg:genheapsort}
 \end{finalgo}
 Jos kuitenkin kaarien painot ovat kokonaislukuja, $O(m + n \log n)$-rajaa voidaan parantaa:
 Mikkel Thorup esitti vuonna 2003 keon, jonka poisto-operaatio käy ajassa $O(\log \log \min n)$ ja muut operaatiot vakioajassa \cite{Thorup03}. Jos kuitenkin kokonaislukupainot ovat väliltä $[0, N)$, poisto-operaatio voidaan suorittaa ajassa $O(\log \log \min \{ n, N \})$. Nyt selvästi haun aikavaativuus tällaisella keolla on $O(m + n \log \log \min \{n, N \})$.
