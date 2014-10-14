@@ -355,10 +355,26 @@ Ylläesitetyistä aikavaativuuksista ilmenee, ettei asianomaiset algoritmit ole 
 \section{Ruudukkoverkko ja jump point -haku}
 Ruudukkoverkko (engl. \textit{grid graph}) on suuntamattoman verkon erikoistapaus, ja sen rakenne voidaan määritellä siten, että kullakin solmulla on kahden kokonaisluvun koordinaatti, eli solmujoukko on $\{ (x, y) \colon 1 \leq x \leq w, 1 \leq y \leq h \}$, missä $w$ on ruudukkoverkon leveys ja $h$ on sen korkeus. Nyt kun on annettu kaksi solmua $(x_1, y_1)$ ja $(x_2, y_2)$, jos vain yksi koordinaateista eroavat yksikön verran, kyseessä on vaaka- tai pystysuuntainen kaari ja sen painoksi asetetaan 1. Toisaalta, kun molemmat koordinaatit eroavat yksikön verran, kyseessä on vino kaari, jonka painoksi asetetaan $\sqrt{2}$. On selvää, että jo leveyssuuntainen haku on optimaali tällaisella verkolla, sillä aina kun se etenee vinottain, esim. solmusta $(x, y)$ solmuun $(x + 1, y - 1)$, se ohittaa kahden kaaren siirron solmun $(x + 1, y)$ tai $(x, y - 1)$ kautta, joka pidentäisi lyhimmän polun pituuden kahdella yksiköllä $\sqrt{2}$ sijaan. Intuitiivisest ottaen, ruudukkoverkoilla heuristinen haku on kannattavampaa kuin kaksisuuntaisuus, ja tavallinen $A\ast$ on hyvä valinta. Toisaalta, juuri tällaisella verkkotyypillä $A\ast$ kärsii polkujen ``symmetriasta''. Kuten yleensä erityistapauksiin rajoittuessa, polunhaku ruudukolla voidaan tehdä paljon tehokkaammin. Vuonna 2011 Harabor ja Grastien esittivät ``jump point search'' -nimisen $A\ast$:n muunnelman, joka karsii pois polkusymmetriat ja etenee ``hyppien'' yli monen solmun siinä, missä muut algoritmit etenevät jokaisen välisolmun kautta \cite{Harabor11}.
 
+\section{Dijkstran algoritmi kaarivipuilla}
+Vuonna 2007 Möhring et al. esittivät mielenkiintoisen tavan nopeuttaa Dijkstran algoritmi \cite{Mohring07}. Ajatuksena on osittaa suunnatun verkon $G=(V, A)$ solmujoukko osioihin $V_1, \dots, V_p$ siten, että
+\[
+\bigcup_{i = 1}^p V_i = V,
+\]
+ja $V_i \cap V_j = \emptyset$ jokaisella $i \neq j$. Ositus voidaan toteuttaa kuvauksella $r \colon V \to \{1, \dots, p\}$. Kustakin osiosta $V_i$ puhuttaessa, sen ''rajasolmut'' (engl. \textit{boundary nodes}) määritellään joukkona
+\[
+B_i = \{ v \in V_i \colon \exists(u, v) \in A \text{ siten että } r(v) \neq r(u) \}.
+\]
+Lisäksi, järjestelmä liittää jokaiseen verkon kaareen ''kaarivipuvektorin'' (engl. \textit{arc-flag vector}), jota voidaan toteuttaa $p$:n bitin bittivektorina. Nyt jokaisella osiolla $V_i$ järjestelmän esiprosessointialgoritmi ajaa ''takaperin'' tavallisen Dijkstran algoritmi kustakin rajasolmusta $b \in B_i$, ja asettaa tuloksena syntyvässä lyhimpien polkujen puussa jokaisen kaaren $a$ kohdalla $a$:n vipuvektorin $r(b)$:s bitti päälle. Tuloksena syntyvässä järjestelmässä, hakiessa polkua solmuun $t$, nopeutettu Dijkstran algoritmi voi karsia kaikki ne kaaret, joiden vektorin $r(t)$:s bitti ei ole päällä, ainakin niin kauan kunnes haku pääsee samaan osioon solmun $t$ kanssa.
+
+\subsection{Ositustekniikat}
+ Kuten ylläolevasta kävi ilmi, ''kaarivipu''-Dijkstra vaatii verkon solmujen osituksen, minkä jälkeen joudutaan esiprosessoimaan koko verkko. Koska esiprosessoinnin aika riipuu lineaarisesti kaikkien osioiden kaikkien rajasolmujen yhteenlasketusta määrästä, jälkimmäisen minimointi on toivottavaa. 
+ 
+ Mikäli on annettu kunkin solmun koordinaatit tasossa, helpoin tapa osioida on jakaa pienin, kaikki solmut sisältävä suorakulmio $w$ sarakkeeseen ja $h$ riviin. Tämä ei kuitenkaan ole vailla ongelmia: esimerkiksi viidenkymmenen neliökilometrin osio pääkaupungiseudulla sisältäisi paljon enemmän infrastruktuuria kuin jokin samankokoinen alue Kainuun maakunnassa. Asia voidaan parantaa käyttämällä ''nelipuita'' (engl. \textit{quad-tree}):
+ 
 \section{Polunhaku ja multiple sequence alignment -ongelma}
 
 \section{Lyhimmät polut ja rinnakkaisuus}
-
+Toistaiseksi lyhimpien polkujen haku ei juuri antanut paljon aihetta rinnakkaistamiseen. Vuonna 1998 Meyer ja Sanders esittivät $\Delta$-stepping -nimisen algoritminsa, joka asettaa kunkin saavutetun solmun $u$ omaan ``koriin'' (engl. \textit{bucket}) numero $i$ aina, kun $g(u) \in [(i - 1)\Delta, i\Delta)$.
 \bibliographystyle{babplain-lf}
 \bibliography{refs}
 
