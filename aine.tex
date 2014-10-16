@@ -369,9 +369,14 @@ Lisäksi, järjestelmä liittää jokaiseen verkon kaareen ''kaarivipuvektorin''
 \subsection{Ositustekniikat}
  Kuten ylläolevasta kävi ilmi, ''kaarivipu''-Dijkstra vaatii verkon solmujen osituksen, minkä jälkeen joudutaan esiprosessoimaan koko verkko. Koska esiprosessoinnin aika riipuu lineaarisesti kaikkien osioiden kaikkien rajasolmujen yhteenlasketusta määrästä, jälkimmäisen minimointi on toivottavaa. 
  
- Mikäli on annettu kunkin solmun koordinaatit tasossa, helpoin tapa osioida on jakaa pienin, kaikki solmut sisältävä suorakulmio $w$ sarakkeeseen ja $h$ riviin. Tämä ei kuitenkaan ole vailla ongelmia: esimerkiksi viidenkymmenen neliökilometrin osio pääkaupungiseudulla sisältäisi paljon enemmän infrastruktuuria kuin jokin samankokoinen alue Kainuun maakunnassa. Asia voidaan parantaa käyttämällä ''nelipuita'' (engl. \textit{quad-tree}):
+ Mikäli on annettu kunkin solmun koordinaatit tasossa, helpoin tapa osioida verkko (''ruudukointi'') on jakaa pienin, kaikki solmut sisältävä suorakulmio $w$ sarakkeeseen ja $h$ riviin. Tämä ei kuitenkaan ole vailla ongelmia: esimerkiksi viidenkymmenen neliökilometrin osio pääkaupungiseudulla sisältäisi paljon enemmän infrastruktuuria kuin jokin samankokoinen alue Kainuun maakunnassa. Asia voidaan parantaa käyttämällä ''nelipuita'' (engl. \textit{quad-tree}): koko suorakulmio jaetaan neljään, samankokoiseen suorakulmioon, minkä jälkeen jaetaan jälkimmäiset, ja niin edelleen pysäyttäen jaon niiden suorakulmioiden kohdalla, joissa on enintään $\kappa$ solmua ($\kappa$ annetaan nelipuualgoritmille parametrina). Tämä ottaa solmujakauman jo paremmin kuin ruudukointi, mutta ei niin hyvin kuin $kd$-puu (engl. \textit{$kd$-tree}), joka lajittelee kaikkien solmujen listan ensin esimerkiksi $x$-koordinaattien perusteella, poimii mediaanialkion $x$-koordinaatin $x_{mid}$, ja implisiittisesti jakaa koko listan kahteen osalistaan $V_{\leq}$ ja $V_{>}$, missä $V_{\ast} = \{ x \in V \colon x \ast x_{mid}\}$, minkä jälkeen lajitellaan $V_{\leq}$ ja $V_{>}$, mutta jo $y$-koordinaattien perusteella, ja jako pysähtyy niiden solmujoukkojen kohdalla, joissa on enintään $\kappa$ solmua (tässäkin $\kappa$ on nelipuulle annettu parametri).
  
-\section{Polunhaku ja multiple sequence alignment -ongelma}
+ Neljäs tapa, jota Möhring et al. ovat tarkastelleet, on vuonna 1998 kehitetty METIS \cite{Karypis98}, joka ei edes tarvitse solmukoordinaatteja. Järjestelmä toimii siten, että syöteverkosta $G_i$ muodostetaan verkko $G_{i + 1}$ siten, että $G_i$:ssä korvataan ''tiheästi'' kytketyt solmut yhdellä solmulla verkossa $G_{i + 1}$, ja niin jatkaen pääsee tarpeeksi pieneen verkkoon $G_{min}$, jonka osittaminen on tarpeeksi tehokasta. Kun $G_{min}$ on ositettu, kuljetaan redusointiketjussa takaperin ja laajennetaan väliverkot $G_{min - 1}, \dots, G_1$, kunnes päästään alkuperäiseen verkkoon $G_0 = G$.
+ 
+\subsection{Tulokset}
+
+ 
+\section{Polunhaku ja Multiple Sequence Alignment \\-ongelma}
 
 \section{Lyhimmät polut ja rinnakkaisuus}
 Toistaiseksi lyhimpien polkujen haku ei juuri antanut paljon aihetta rinnakkaistamiseen. Vuonna 1998 Meyer ja Sanders esittivät $\Delta$-stepping -nimisen algoritminsa, joka asettaa kunkin saavutetun solmun $u$ omaan ``koriin'' (engl. \textit{bucket}) numero $i$ aina, kun $g(u) \in [(i - 1)\Delta, i\Delta)$.
