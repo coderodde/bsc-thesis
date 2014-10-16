@@ -236,15 +236,15 @@ $u = \underset{x \in \text{OPEN}}{\argmin} \, g(x)$ \\
   \nonl Käännetty haku.\\
   	$g' = g' + w(x, u)$ \\
   }
-  \If{$x \in \text{OPEN}$}{
+  \If{$x \not \in \text{OPEN}$}{
     $\text{OPEN} = \text{OPEN} \cup \{ x \} $ \\
     $g(x) = g'$ \\
-    $\pi = x$ \\
+    $\pi(x) = u$ \\
     \textsc{Update}$(x, \text{CLOSED}_2, g', g_2, \mu, m)$ \\
   }
   \ElseIf{$g(x) > g'$}{
     $g(x) = g'$ \\
-    $\pi = x$ \\
+    $\pi(x) = u$ \\
     \textsc{Update}$(x, \text{CLOSED}_2, g', g_2, \mu, m)$ \\
   }
 }
@@ -270,10 +270,10 @@ $\mu = \infty$ \\
 $m = \textbf{nil}$ \\ 
 \While{$|\text{OPEN}| \cdot |\text{OPEN}_{REV}| > 0$}{
   \If{$m$ \textbf{\emph{is not nil}}}{
-    $p = $ \textsc{Terminate}$(\text{OPEN}, \text{OPEN}_{REV},$ \\
-    $\phantom{p = \textsc{Try-Terminate}(} g, g_{REV},$ \\
-    $\phantom{p = \textsc{Try-Terminate}(} \pi, \pi_{REV},$  \\
-    $\phantom{p = \textsc{Try-Terminate}(} \mu, m)$ \\
+    $p = \textsc{Terminate}(\text{OPEN}, \text{OPEN}_{REV},$ \\
+    $\phantom{p = \textsc{Terminate}(} g, g_{REV},$ \\
+    $\phantom{p = \textsc{Terminate}(} \pi, \pi_{REV},$  \\
+    $\phantom{p = \textsc{Terminate}(} \mu, m)$ \\
     \If{$p$ \textbf{\emph{is not nil}}}{
     	\KwRet $p$
     }
@@ -307,22 +307,13 @@ $e_f$ on kuvaus, jolle $e_f(u) = \{ v \in V \colon (u, v) \in A \}$ jokaisella $
 \end{finalgo}
 
 \subsection{Kaksisuuntainen $A\ast$}
-Kaksisuuntaisen $A\ast$:n saa aikaan muuttamalla algoritmin \ref{alg:expand} rivi 1 seuraavanlaiseksi:
+Kaksisuuntaisen $A\ast$:n saa aikaan muuttamalla algoritmin \ref{alg:expand} rivillä 1 esiintyvä $g(x)$ $f(x)$:ksi ja muuttamalla \textsc{Terminate}-rutiinin ehto seuraavanlaiseksi:
 \[
-u = \underset{x \in \text{OPEN}}{\argmin f(x)},
+\max( \underset{x \in \textsc{OPEN}}{f(x)}, \underset{x \in \textsc{OPEN}_{REV}}{f_{REV}(x)} ) \geq \mu,
 \]
-ja korvaamalla rivin 7 kutsu kutsulla rutiiniin $\textsc{Terminate}\ast(\dots)$, jonka määritelmä on alla.
-\begin{finalgo}
-\If{$\mu \leq \max(\underset{x \in \text{OPEN}}{f(x)}, \underset{x \in \text{OPEN}_{REV}}{f_{REV}(x)})$}{
-  \KwRet \textsc{Traceback-Path}$(m, \pi, \pi_{REV})$\\
-}
-\KwRet $\textbf{nil}$ \\
-\caption{\textsc{Terminate$\ast$}$(\text{OPEN}, \text{OPEN}_{REV}, f, f_{REV}, \pi, \pi_{REV}, \mu, m)$}
-\label{alg:tryterminatestar}
-\end{finalgo}
-
+joka on ehdotettu BHPA algoritmissa.
 \section{Prioriteettijonon valinta}
-Polkua hakiessa painotetuissa verkoissa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
+Polkua hakiessa painotetussa verkossa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
 \begin{enumerate}
 \item \textsc{Insert}$(H, x, k)$ tallettaakseen solmun $x$ sen prioriteetin $k$ kera,
 \item \textsc{Decrease-Key}$(H, x, k)$ päivittääkseen solmun $x$ talletetun prioriteetin (pienemmäksi),
