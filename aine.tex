@@ -315,10 +315,16 @@ jonka ehdotti Ira Pohl vuonna 1971 algoritmissaan BHPA \cite{Pohl71}.
 
 Vuonna 2007 Taeg-Keun Whangbo ehdotti toisenlaisen optimaalin kaksisuuntaisen heuristisen hakualgoritmin: $h$-arvon sijasta, määritellään
 \begin{align*}
-l_1(x) &= \frac{(s - p) \cdot (x - p)}{ | s - p | }, x \in \text{OPEN}, \\
-l_2(x) &= \frac{(t - p) \cdot (x - p)}{ | t - p | }, x \in \text{OPEN}_{REV}.
+l(x) &= \frac{(s - p) \cdot (x - p)}{ | s - p | }, x \in \text{OPEN}, \\
+l_{REV}(x) &= \frac{(t - p) \cdot (x - p)}{ | t - p | }, x \in \text{OPEN}_{REV}.
 \end{align*}
-Kun kaksi hakuavaruutta kohtaavat solmussa $p$, piirretään $p$:n kautta kulkeva viiva, joka on normaali viivan $\Lambda$, missä $\Lambda$ kulkee solmujen $s, t$ kautta.
+Kun kaksi hakuavaruutta kohtaavat solmussa $p$, piirretään $p$:n kautta kulkeva viiva $\Lambda$, joka on normaali sen viivan kanssa, joka kukee solmujen $s, t$ kautta. Nyt esimerkiksi jokaisella $x \in \text{OPEN}_{REV}$, $l_{REV}(x)$ on solmun $x$ etäisyys $\Lambda$:sta, ja uusi pysähtymisehto on
+\begin{align*}
+L^1_{\min} & \leq \underset{x \in \text{OPEN}}{\min} (g(x) + l(x)), \\
+L^2_{\min} & \leq \underset{x \in \text{OPEN}_{REV}}{\min} (g_{REV}(x) + l_{REV}(x)),
+\end{align*}
+missä $L_{\min}^1$ on lyhimmän $s, p$ -polun kustannus normaalin haun puussa, ja $L_{\min}^2$ analogisesti lyhimmän $p, t$ -polun kustannus vastakkainsuuntaisessa haussa. Whangbo raportoi tavallisen $A\ast$:n vievän yhteensä 372 aikayksikköä laskettuna yhteen yli joukon hakuja. Samalla datalla BHPA vie 509 aikayksikköä, ja Whangbon variantti 209 aikayksikköä (huomaa BHPA:n vievän enemmän aikaa kuin tavallinen $A\ast$).
+
 \section{Prioriteettijonon valinta}
 Polkua hakiessa painotetussa verkossa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
 \begin{enumerate}
