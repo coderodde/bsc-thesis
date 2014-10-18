@@ -157,10 +157,10 @@ Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy
 $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
 \While{$|\text{OPEN}| > 0$}{
  $u = \underset{x \in \text{OPEN}}{\argmin}\, g(x)$ \\
- $\text{OPEN} = \text{OPEN} - \{ u \}$ \\
  \If{$x \textbf{\emph{ is }} t$}{
    \KwRet \textsc{Traceback-Path$(t, \pi, \textbf{nil})$}\\
  }
+ $\text{OPEN} = \text{OPEN} - \{ u \}$ \\
  $\text{CLOSED} = \text{CLOSED} \cup \{ x \}$ \\
  \nonl Jokaisella solmun $x$ lapsisolmulla $u$, tee... \\
  \For{$(x, u) \in G.A$}{
@@ -185,7 +185,7 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
 \label{alg:unidijkstra}
 \label{Dijkstra}
 \end{finalgo}
-\noindent $A\ast$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin, paitsi että rivillä 3 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. Molemmat kutsuvat \textsc{Traceback-Path}-rutiinin, joka siis muodostaa lyhimmän polun ''edeltäjäpuusta'' (engl. \textit{predecessor tree}) ajassa $\Theta(N)$, missä $N$ on lyhimmän polun solmujen määrä. On huomattava, että $A\ast$ palautuu Dijkstran algoritmiin määrittelemällä $h(u) = 0$ jokaisella $u \in V$.
+\noindent $A\ast$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin (Algoritmi \ref{alg:unidijkstra}), paitsi että rivillä 3 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. Molemmat kutsuvat \textsc{Traceback-Path}-rutiinin, joka siis muodostaa lyhimmän polun ''edeltäjäpuusta'' (engl. \textit{predecessor tree}) ajassa $\Theta(N)$, missä $N$ on lyhimmän polun solmujen määrä. On huomattava, että $A\ast$ palautuu Dijkstran algoritmiin määrittelemällä $h(u) = 0$ jokaisella $u \in V$.
 \begin{finalgo}
 $u = x$ \\
 $p = \langle  \rangle$ \\
@@ -311,7 +311,14 @@ Kaksisuuntaisen $A\ast$:n saa aikaan muuttamalla algoritmin \ref{alg:expand} riv
 \[
 \max( \underset{x \in \textsc{OPEN}}{f(x)}, \underset{x \in \textsc{OPEN}_{REV}}{f_{REV}(x)} ) \geq \mu,
 \]
-joka on ehdotettu BHPA algoritmissa \cite{Pohl71}.
+jonka ehdotti Ira Pohl vuonna 1971 algoritmissaan BHPA \cite{Pohl71}.
+
+Vuonna 2007 Taeg-Keun Whangbo ehdotti toisenlaisen optimaalin kaksisuuntaisen heuristisen hakualgoritmin: $h$-arvon sijasta, määritellään
+\begin{align*}
+l_1(x) &= \frac{(s - p) \cdot (x - p)}{ | s - p | }, x \in \text{OPEN}, \\
+l_2(x) &= \frac{(t - p) \cdot (x - p)}{ | t - p | }, x \in \text{OPEN}_{REV}.
+\end{align*}
+Kun kaksi hakuavaruutta kohtaavat solmussa $p$, piirretään $p$:n kautta kulkeva viiva, joka on normaali viivan $\Lambda$, missä $\Lambda$ kulkee solmujen $s, t$ kautta.
 \section{Prioriteettijonon valinta}
 Polkua hakiessa painotetussa verkossa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
 \begin{enumerate}
@@ -320,7 +327,7 @@ Polkua hakiessa painotetussa verkossa joudutaan käyttäämään prioriteettijon
 \item \textsc{Extract-Minimum}$(H)$ poistaakseen pienimmän prioriteetin omaava solmu, ja
 \item \textsc{Is-Empty}$(H)$ varmistaakseen, että jonossa on vielä alkioita.
 \end{enumerate}
-Helpoin tehokkaaksi kutsuttu prioriteettijonorakenne (jatkossa vain ''keko'') on binäärikeko, jonka operaatiot (1) - (3) käyvät ajassa $O(\log n)$, jolloin tällaisella keolla Dijkstran ja $A\ast$-algoritmit käyvät kumpikin ajassa $O((m + n) \log n)$. Teoriassa edelläoleva ylläraja voidaan parantaa käyttämällä Fibonacci-kekoa, jonka lisäysoperaatio (1) käy eksaktissa vakioajassa, päivitysoperaatio (2) tasoitetussa vakioajassa, ja poisto-operaatio (3) tasoitetussa ajassa $O(\log n)$, jolloin haut voidaan suorittaa ajassa $O(m + n \log n)$. Huomaa, että kaikki tähän asti mainitut keot perustuvat vertailuihin, ja teoriassa enintään yksi operaatiosta \textsc{Insert} tai \textsc{Extract-Minimum} voi käydä (eksaktissa tai tasoitetussa) vakioajassa, ja toisen on käyttävä ajassa $\Omega(\log n)$, koska muuten algoritmi \ref{alg:genheapsort} tällaisella keolla rikkoisi lajittelemisen informaatioteoreettisen rajan, joka on $\Omega(n \log n)$.
+Helpoin prioriteettijonorakenne (jatkossa vain ''keko''), jonka operaatiot (1) - (3) käyvät logaritmisessa ajassa, on binäärikeko. Tällaisella keolla Dijkstran ja $A\ast$-algoritmit käyvät kumpikin ajassa $O((m + n) \log n)$. Teoriassa edelläoleva ylläraja voidaan parantaa käyttämällä Fibonacci-kekoa, jonka lisäysoperaatio (1) käy eksaktissa vakioajassa, päivitysoperaatio (2) tasoitetussa vakioajassa, ja poisto-operaatio (3) tasoitetussa ajassa $O(\log n)$, jolloin haut voidaan suorittaa ajassa $O(m + n \log n)$. Huomaa, että kaikki tähän asti mainitut keot perustuvat vertailuihin, ja teoriassa enintään yksi operaatiosta \textsc{Insert} tai \textsc{Extract-Minimum} voi käydä eksaktissa tai tasoitetussa vakioajassa, ja toisen on käyttävä ajassa $\Omega(\log n)$, koska muuten algoritmi \ref{alg:genheapsort} tällaisella keolla rikkoisi vertailuihin perustuvan lajittelemisen informaatioteoreettisen rajan, joka on $\Omega(n \log n)$.
 \begin{finalgo}
 \nonl \text{Tyhjennä keko} \\
 $H = \varnothing$ \\
