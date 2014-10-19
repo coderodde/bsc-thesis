@@ -152,7 +152,7 @@ Verkoista puhuttaessa verkko $G$ on kaksikko $(V, A)$, jossa $V$ on solmujen jou
 %
 % instead.
 \section{Tavallisimmat algoritmit}
-Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa \cite{Dijkstra59}. Algoritmi voidaan pitää yhdistävän ''ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan $A\ast$-algoritminsa,  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta \cite{Hart68}. Erona on kuitenkin se, että $A\ast$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvo, joka on siis $f(u) = g(u) + h(u)$, missö $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että $A\ast$ ''tietää'' mihin suuntaan haku on suunnattava, jota pääsisi maalisolmuun, ainakin paremmin kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ''kaikkiin suuntiin''.
+Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa \cite{Dijkstra59}. Algoritmi voidaan pitää yhdistävän ''ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan A$^{\ast}$-algoritminsa,  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta \cite{Hart68}. Erona on kuitenkin se, että A$^{\ast}$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvo, joka on siis $f(u) = g(u) + h(u)$, missö $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että A$^{\ast}$ ''tietää'' mihin suuntaan haku on suunnattava, jota pääsisi maalisolmuun, ainakin paremmin kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ''kaikkiin suuntiin''.
 \begin{finalgo}
 \nonl Monikkosijoitus \\
 $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
@@ -186,7 +186,7 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
 \label{alg:unidijkstra}
 \label{Dijkstra}
 \end{finalgo}
-\noindent $A\ast$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin (Algoritmi \ref{alg:unidijkstra}), paitsi että rivillä 3 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. Molemmat kutsuvat \textsc{Traceback-Path}-rutiinin, joka siis muodostaa lyhimmän polun ''edeltäjäpuusta'' (engl. \textit{predecessor tree}) ajassa $\Theta(N)$, missä $N$ on lyhimmän polun solmujen määrä. On huomattava, että $A\ast$ palautuu Dijkstran algoritmiin määrittelemällä $h(u) = 0$ jokaisella $u \in V$.
+\noindent A$^{\ast}$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin (Algoritmi \ref{alg:unidijkstra}), paitsi että rivillä 3 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. Molemmat kutsuvat \textsc{Traceback-Path}-rutiinin, joka siis muodostaa lyhimmän polun ''edeltäjäpuusta'' (engl. \textit{predecessor tree}) ajassa $\Theta(N)$, missä $N$ on lyhimmän polun solmujen määrä. On huomattava, että A$^{\ast}$ palautuu Dijkstran algoritmiin määrittelemällä $h(u) = 0$ jokaisella $u \in V$.
 \begin{finalgo}
 $u = x$ \\
 $p = \langle  \rangle$ \\
@@ -208,7 +208,7 @@ $u = \pi(u)$
 \end{finalgo}
 
 \section{Kaksisuuntainen haku}
-Vaikka $A\ast$ on tyypillisesti tehokkaampi kuin Dijkstran algoritmi, käyttämällä \textit{kaksisuuntaista} hakua, voidaan päästää verrattavissa olevaan suorituskykyyn. Ajatus kaksisuuntaisuuden takana on se, että algoritmi kasvattaa kaksi hakupuuta, yksi normaaliin tapaan ja toinen maalisolmusta ihan kuin kaaret olisivat ''käännetty'' päinvastaiseen suuntaan, kunnes kaksi hakuavaruutta ''kohtaavat'' keskellä. Nyt jos lyhin polku koostuu $N$ kaaresta, ja verkon solmujen keskiarvoinen aste on $d$, tavallinen, eli yksisuuntainen haku tekee työn
+Vaikka A$^{\ast}$ on tyypillisesti tehokkaampi kuin Dijkstran algoritmi, käyttämällä \textit{kaksisuuntaista} hakua, voidaan päästää verrattavissa olevaan suorituskykyyn. Ajatus kaksisuuntaisuuden takana on se, että algoritmi kasvattaa kaksi hakupuuta, yksi normaaliin tapaan ja toinen maalisolmusta ihan kuin kaaret olisivat ''käännetty'' päinvastaiseen suuntaan, kunnes kaksi hakuavaruutta ''kohtaavat'' keskellä. Nyt jos lyhin polku koostuu $N$ kaaresta, ja verkon solmujen keskiarvoinen aste on $d$, tavallinen, eli yksisuuntainen haku tekee työn
 \[
 \sum_{i = 0}^N d^i,
 \]
@@ -219,7 +219,7 @@ kun kaksisuuntainen olisi tehnyt vain
 Ylläoleva pätee leveyssuuntaiseen hakuun sellaisenaan, ja painotetun haun kohdalla voidaan saada yläraja kertomalla kunkin summan termin tekijällä $O(\log n)$. 
 
 \subsection{Kaksisuuntainen Dijkstran algoritmi}
-Ylläolevan analyysin nojalla, on selvä, että Dijkstran algoritmi hyötyy kaksisuuntaisuudesta, eikä edellytä minkäänlaista verkon esiprosessointia. Lisäksi, algoritmin vahvuutena suhteessa $A\ast$:iin ei ole pelkästään verrattavissa oleva tehokkuus, vaan myös heuristiikkafunktion tarpeettomuus. Alla $\mu$ on toistaiseksi lyhimmän polun kustannus, joka suorituksen alussa on $\infty$. Kun algoritmi löytää toistaiseksi lyhimmän polun hakuavaruuksien kohdatessa, ''välisolmu'' $m$ ja sen implikoiva kustannus $\mu$ päivitetään. Haku jatkuu siihen asti, kunnes molempien avointen listojen minimialkioiden kustannusten summa on vähintään $\mu$. 
+Ylläolevan analyysin nojalla, on selvä, että Dijkstran algoritmi hyötyy kaksisuuntaisuudesta, eikä edellytä minkäänlaista verkon esiprosessointia. Lisäksi, algoritmin vahvuutena suhteessa A$^{\ast}$:iin ei ole pelkästään verrattavissa oleva tehokkuus, vaan myös heuristiikkafunktion tarpeettomuus. Alla $\mu$ on toistaiseksi lyhimmän polun kustannus, joka suorituksen alussa on $\infty$. Kun algoritmi löytää toistaiseksi lyhimmän polun hakuavaruuksien kohdatessa, ''välisolmu'' $m$ ja sen implikoiva kustannus $\mu$ päivitetään. Haku jatkuu siihen asti, kunnes molempien avointen listojen minimialkioiden kustannusten summa on vähintään $\mu$. 
 \begin{finalgo}
 $u = \underset{x \in \text{OPEN}}{\argmin} \, g(x)$ \\
 \text{OPEN}  = \text{OPEN} - $\{ u \} $ \\
@@ -307,8 +307,8 @@ $e_f$ on kuvaus, jolle $e_f(u) = \{ v \in V \colon (u, v) \in A \}$ jokaisella $
 \label{alg:bidijkstraterminate}
 \end{finalgo}
 
-\subsection{Kaksisuuntainen $A\ast$}
-Kaksisuuntaisen $A\ast$:n saa aikaan muuttamalla algoritmin \ref{alg:expand} rivillä 1 esiintyvä $g(x)$ $f(x)$:ksi ja muuttamalla \textsc{Terminate}-rutiinin ehto seuraavanlaiseksi:
+\subsection{Kaksisuuntainen A$^{\ast}$}
+Kaksisuuntaisen A$^{\ast}$:n saa aikaan muuttamalla algoritmin \ref{alg:expand} rivillä 1 esiintyvä $g(x)$ $f(x)$:ksi ja muuttamalla \textsc{Terminate}-rutiinin ehto seuraavanlaiseksi:
 \[
 \max( \underset{x \in \textsc{OPEN}}{f(x)}, \underset{x \in \textsc{OPEN}_{REV}}{f_{REV}(x)} ) \geq \mu,
 \]
@@ -324,7 +324,7 @@ Kun kaksi hakuavaruutta kohtaavat solmussa $p$, piirretään $p$:n kautta kulkev
 L^1_{\min} & \leq \underset{x \in \text{OPEN}}{\min} (g(x) + l(x)), \\
 L^2_{\min} & \leq \underset{x \in \text{OPEN}_{REV}}{\min} (g_{REV}(x) + l_{REV}(x)),
 \end{align*}
-missä $L_{\min}^1$ on lyhimmän $s, p$ -polun kustannus normaalin haun puussa, ja $L_{\min}^2$ analogisesti lyhimmän $p, t$ -polun kustannus vastakkainsuuntaisessa haussa. Whangbo raportoi tavallisen $A\ast$:n vievän yhteensä 372 aikayksikköä laskettuna yhteen yli joukon hakuja. Samalla datalla BHPA vie 509 aikayksikköä, ja Whangbon variantti 209 aikayksikköä (huomaa BHPA:n vievän enemmän aikaa kuin tavallinen $A\ast$).
+missä $L_{\min}^1$ on lyhimmän $s, p$ -polun kustannus normaalin haun puussa, ja $L_{\min}^2$ analogisesti lyhimmän $p, t$ -polun kustannus vastakkainsuuntaisessa haussa. Whangbo raportoi tavallisen A$^{\ast}$:n vievän yhteensä 372 aikayksikköä laskettuna yhteen yli joukon hakuja. Samalla datalla BHPA vie 509 aikayksikköä, ja Whangbon variantti 209 aikayksikköä (huomaa BHPA:n vievän enemmän aikaa kuin tavallinen A$^{\ast}$).
 
 \section{Prioriteettijonon valinta}
 Polkua hakiessa painotetussa verkossa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
@@ -334,7 +334,7 @@ Polkua hakiessa painotetussa verkossa joudutaan käyttäämään prioriteettijon
 \item \textsc{Extract-Minimum}$(H)$ poistaakseen pienimmän prioriteetin omaava solmu, ja
 \item \textsc{Is-Empty}$(H)$ varmistaakseen, että jonossa on vielä alkioita.
 \end{enumerate}
-Helpoin prioriteettijonorakenne (jatkossa vain ''keko''), jonka operaatiot (1) - (3) käyvät logaritmisessa ajassa, on binäärikeko. Tällaisella keolla Dijkstran ja $A\ast$-algoritmit käyvät kumpikin ajassa $O((m + n) \log n)$. Teoriassa edelläoleva ylläraja voidaan parantaa käyttämällä Fibonacci-kekoa, jonka lisäysoperaatio (1) käy eksaktissa vakioajassa, päivitysoperaatio (2) tasoitetussa vakioajassa, ja poisto-operaatio (3) tasoitetussa ajassa $O(\log n)$, jolloin haut voidaan suorittaa ajassa $O(m + n \log n)$. Huomaa, että kaikki tähän asti mainitut keot perustuvat vertailuihin, ja teoriassa enintään yksi operaatiosta \textsc{Insert} tai \textsc{Extract-Minimum} voi käydä eksaktissa tai tasoitetussa vakioajassa, ja toisen on käyttävä ajassa $\Omega(\log n)$, koska muuten algoritmi \ref{alg:genheapsort} tällaisella keolla rikkoisi vertailuihin perustuvan lajittelemisen informaatioteoreettisen rajan, joka on $\Omega(n \log n)$.
+Helpoin prioriteettijonorakenne (jatkossa vain ''keko''), jonka operaatiot (1) - (3) käyvät logaritmisessa ajassa, on binäärikeko. Tällaisella keolla Dijkstran ja A$^{\ast}$-algoritmit käyvät kumpikin ajassa $O((m + n) \log n)$. Teoriassa edelläoleva ylläraja voidaan parantaa käyttämällä Fibonacci-kekoa, jonka lisäysoperaatio (1) käy eksaktissa vakioajassa, päivitysoperaatio (2) tasoitetussa vakioajassa, ja poisto-operaatio (3) tasoitetussa ajassa $O(\log n)$, jolloin haut voidaan suorittaa ajassa $O(m + n \log n)$. Huomaa, että kaikki tähän asti mainitut keot perustuvat vertailuihin, ja teoriassa enintään yksi operaatiosta \textsc{Insert} tai \textsc{Extract-Minimum} voi käydä eksaktissa tai tasoitetussa vakioajassa, ja toisen on käyttävä ajassa $\Omega(\log n)$, koska muuten algoritmi \ref{alg:genheapsort} tällaisella keolla rikkoisi vertailuihin perustuvan lajittelemisen informaatioteoreettisen rajan, joka on $\Omega(n \log n)$.
 \begin{finalgo}
 \nonl \text{Tyhjennä keko} \\
 $H = \varnothing$ \\
@@ -362,7 +362,7 @@ Ruudukkoverkko (engl. \textit{grid graph}) on suuntamattoman verkon erikoistapau
   \centering
   \begin{subfigure}[h]{0.45\textwidth}
     \includegraphics[clip=true,trim = 8px 8px 8px 8px,width=\textwidth,keepaspectratio]{AStarSearch}
-    \caption{$A\ast$-haku}
+    \caption{A$^{\ast}$-haku}
     \label{fig:astarpathsymmetry}
   \end{subfigure}
   ~
@@ -409,12 +409,14 @@ Lisäksi, määritellään $c(-,-) = 0$, ja aina kun jompikumpi merkki $a \in \S
 Kun on annettu sekvenssit $S_1, \dots, S_{\kappa}$, kukin niistä asetetaan $\kappa$-ulotteisen ''hilan'' (engl. \textit{lattice}) akseleiksi. Kukin solmu voidaan ajattella omistavan koordinaatit $(x_1, \dots, x_{\kappa})$, ja kun siitä siirrytään seuraavaan solmuun $(y_1, \dots, y_{\kappa})$, kukin $y_i$ on joko $x_i$ tai $x_i + 1$, jolloin niiden koordinaattien $y_i$ kohdalla, jotka eroavat koordinaatista $x_i$, luetaan $i$:nnen sekvenssin $y_i$:des merkki, ja muiden kohdalla ei lueta mitään, vaan laitetaan samaan sarakkeeseen välimerkki -. Selvästi, jokaisella hilan ''sisäsolmulla'' on tasan $2^{\kappa} - 1$ lapsisolmua, ja vaikka hilaverkko on syklitön, jo muutaman sekvenssin hila ei voida säilyttää muistissa eksplisiittisesti, vaan solmut joudutaan generoimaan vanhempainsolmuja laajennettaessa (sekvenssien pituus on sadan merkin suuruusluokkaa). Nyt ongelma palautuu reitinhakuongelmaksi, jossa on löydettävä lyhin polku hilan solmusta $(0, \dots, 0)$ solmuun $(|S_1|, \dots, |S_{\kappa}|)$.
 
 \subsection{Ratkaisu}
-Yoshizumi et al. raportoivat A$^{\ast}$:n pystyvän käsittelemään enintään 7 sekvenssia, sillä sen avoin ja suljettu listat kasvavat liian isoiksi, ja ehdottavat PEA$^{\ast}$ nimisen algoritmin (engl. \textit{Partial Expansion A}$^\ast$), jota voidaan ajatella uhraavan hieman aikaa pitääkseen listat pienempinä, jolloin algoritmi pystyy käsittelemään 8 sekvenssia \cite{Yoshizumi00}. Algoritmi lajittelee avoimen listan solmut ei $f$-, vaan $F$-arvojen perusteella, missä $F(u)$ on solmun $u$ ''ei-lupaavien'' solmujen pienin $f$-arvo. Myös on annettu ei-negaativinen katkaisu arvo $C$; (engl. \textit{cutoff value}). Lapsisolmu pidetään ''lupaavana'', jos sen $f$-arvo ei ole suurempi kuin vanhempainsolmunsa $F$-arvon ja $C$:n summa.
+Yoshizumi et al. raportoivat A$^{\ast}$:n pystyvän käsittelemään enintään 7 sekvenssia, sillä sen avoin ja suljettu listat kasvavat liian isoiksi, ja ehdottavat PEA$^{\ast}$ nimisen algoritmin (engl. \textit{Partial Expansion A}$^\ast$), jota voidaan ajatella uhraavan hieman aikaa pitääkseen listat pienempinä, jolloin algoritmi pystyy käsittelemään 8 sekvenssia \cite{Yoshizumi00}. Algoritmi lajittelee avoimen listan solmut ei $f$-, vaan $F$-arvojen perusteella, missä $F(u)$ on solmun $u$ ''ei-lupaavien'' solmujen pienin $f$-arvo. Myös on annettu ei-negaativinen katkaisuarvo $C$; (engl. \textit{cutoff value}). Lapsisolmu pidetään ''lupaavana'', jos sen $f$-arvo ei ole suurempi kuin vanhempainsolmunsa $F$-arvon ja $C$:n summa. Alunperin kunkin solmun $F$-arvo on sen $f$-arvo. Lisäksi, jos solmulla $u$ on ei-lupaavat lapsisolmut, $u$ laitetaan takaisin avoimeen listaan. 
+
+Kaikki kaikkiaan, $C$:n arvolla 50, PEA$^{\ast}$, vähentää muistintarpeen 87\%, vaikka käyttää vain 20\% enemmän aikaa kuin A$^{\ast}$ hilassa, jossa solmun ja sen lapsen $f$-arvot eroavat enintään 396 yksikköä. Lisäksi, PEA$^{\ast}$:n suhde A$^{\ast}$:iin on se, että edellinen palautuu jälkimmäiseksi, kun $C = \infty$.
 
 \section{Lyhimmät polut ja rinnakkaisuus}
 Toistaiseksi lyhimpien polkujen haku ei juuri antanut paljon aihetta rinnakkaistamiseen. Vuonna 1998 Meyer ja Sanders esittivät $\Delta$-stepping -nimisen algoritminsa, joka asettaa kunkin saavutetun solmun $u$ omaan ''koriin'' (engl. \textit{bucket}) numero $i$ aina, kun $g(u) \in [(i - 1)\Delta, i\Delta)$, jolloin kukin säie käsittelee vain osan kaikista koreista. $2^{19}$ solmun verkolla, jonka keskiarvoinen asteen 3, Meyer ja Sanders raportoivat peräkkäisen (engl. \textit{sequential}) version olleen 3.1 kertaa nopeampi kuin ''optimoitu'' Dijkstran algoritmi, ja 16 suorittimen hajautetussa järjestelmässä nopeutus 9.2 on mitattu suhteessa peräkkäiseen $\Delta$-stepping -algoritmiin. On huomattava, että algoritminsa toiminta riippuu $\Delta$:n arvosta, ja Meyer et al. ehdottavat arvon $\Delta = 4/d$, missä $d$ on keskiarvoinen solmun aste.
 
-Rinnakkaistamiseen liittyvien käytännön ongelmista huolimatta, myös kaksisuuntaisen $A\ast$:n variantti nimeltään NBA$\ast$ sai rinnakkaisen version: PNBA$\ast$ käyttää kaksi säiettä, kukin omaa hakusuuntaa varten, ja sisältää suhteellisen vähän synkronoinnin tarvetta \cite{Rios}. Esimerkiksi, 15-palapelillä (engl. \textit{15-puzzle}), NBA$\ast$ löysi lyhimmän 58 siirron polun noin 2.5 kertaa nopeammin kuin $A\ast$, ja PNBA$\ast$ oli noin tasan kaksi kertaa nopeampi kuin edellinen.
+Rinnakkaistamiseen liittyvien käytännön ongelmista huolimatta, myös kaksisuuntaisen A$^{\ast}$:n variantti nimeltään NBA$\ast$ sai rinnakkaisen version: PNBA$\ast$ käyttää kaksi säiettä, kukin omaa hakusuuntaa varten, ja sisältää suhteellisen vähän synkronoinnin tarvetta \cite{Rios}. Esimerkiksi, 15-palapelillä (engl. \textit{15-puzzle}), NBA$\ast$ löysi lyhimmän 58 siirron polun noin 2.5 kertaa nopeammin kuin A$^{\ast}$, ja PNBA$\ast$ oli noin tasan kaksi kertaa nopeampi kuin edellinen.
 
 On huomattava, että rinnakkaistaessa algoritmeja, ei ole mahdollista saada mielivaltaisen suuria nopeutuksia jo Amdahlin lain nojalla, jonka mukaan maksimaalinen nopeutus on
 \[
