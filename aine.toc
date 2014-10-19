@@ -11,7 +11,9 @@
 \contentsline {subsection}{\numberline {7.1}Ositustekniikat}{9}{subsection.7.1}
 \contentsline {subsection}{\numberline {7.2}Tulokset}{10}{subsection.7.2}
 \contentsline {section}{\numberline {8}Polunhaku ja Multiple Sequence Alignment \\-ongelma}{10}{section.8}
-\contentsline {section}{\numberline {9}Lyhimm\IeC {\"a}t polut ja rinnakkaisuus}{10}{section.9}
+\contentsline {subsection}{\numberline {8.1}Ongelman muotoileminen verkkona}{10}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}Ratkaisu}{11}{subsection.8.2}
+\contentsline {section}{\numberline {9}Lyhimm\IeC {\"a}t polut ja rinnakkaisuus}{11}{section.9}
 \contentsline {section}{L\IeC {\"a}hteet}{11}{section*.10}
 \select@language {finnish}
 \select@language {finnish}
