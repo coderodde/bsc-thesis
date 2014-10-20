@@ -90,9 +90,9 @@
 \author{Rodion Efremov}
 \date{\today}
 \level{Kandidaatintutkielma-aine}
-\abstract{Hakiessa lyhimpiä polkuja verkossa, joudutaan väistämättä ottamaan kohdeverkon ominaisuuksia huomioon, mikäli halutaan suoriutua tehtävästä pienimmässä ajassa. Toisinaan on mahdollista määritellä heuristiikkafunktio, ja siten käyttää A$^\ast$-perheen algoritmeja; toisinaan ei niinkään, ei ainakaan tehokkaasti, jolloin jäljelle jää kaksisuuntaisuus ja/tai verkon esiprosessointi nopeuttaakseen haut. Lisäksi, on olemassa ad-hoc ratkaisuja mitä erikoisempia sovelluksia ajatellen: jump point -haku on todennäköisesti tehokkain online-algoritmi ruudukkoverkoilla; toisaalta IDDP (iterative deepening dynamic programming) pystyy linjaamaan jopa yhdeksän aminohapposekvenssia multiple sequence alignment -ongelmassa. Tämän dokumentin tarkoituksena on siis antaa (hyvin suppea) katsaus asiaan liittyviin algoritmeihin ja järjestelmiin.}
+\abstract{Haettaessa lyhimpiä polkuja verkossa joudutaan väistämättä ottamaan kohdeverkon ominaisuuksia huomioon, mikäli halutaan suoriutua tehtävästä pienimmässä mahdollisessa ajassa. Toisinaan on mahdollista määritellä heuristiikkafunktio, ja siten käyttää A$^\ast$-perheen algoritmeja; toisinaan tätä ei voida tehdä, ei ainakaan tehokkaasti, jolloin jäljelle jää kaksisuuntaisuus ja/tai verkon esiprosessointi haun nopeuttamiseksi. Lisäksi, on olemassa ad-hoc ratkaisuja mitä erikoisempia sovelluksia ajatellen: jump point -haku on todennäköisesti tehokkain online-algoritmi ruudukkoverkoilla; toisaalta IDDP (iterative deepening dynamic programming) pystyy linjaamaan jopa yhdeksän aminohapposekvenssia multiple sequence alignment -ongelmassa. Tämän dokumentin tarkoituksena on siis antaa (hyvin suppea) katsaus asiaan liittyviin algoritmeihin ja järjestelmiin.}
 
-\keywords{lyhimmät polut}
+\keywords{verkot, lyhimmät polut}
 
 % classification according to ACM Computing Classification System (http://www.acm.org/about/class/)
 % This is probably mostly relevant for computer scientists
@@ -136,9 +136,9 @@
 \mainmatter       % clear page, start arabic page numbering
 
 \section{Johdanto}
-Polunhaku painotetuissa tai painottamattomissa verkoissa on perustavanlaatuinen ongelma, joka ei ole mielenkiintoinen vain itsessään, vaan on toisinaan tarvittava alioperaatio muissa algoritmeissa. Esimerkiksi Edmond-Karpin algoritmi käyttää leveyssuuntaisen haun ratkaistaessaan maksimivuo-ongelmaa; multiple sequence alignment -ongelmaa on ruvettu viime vuosikymmeninä ratkomaan myös heuristisin polunhakualgoritmein.
+Polunhaku painotetuissa tai painottamattomissa verkoissa on perustavanlaatuinen ongelma, joka ei ole mielenkiintoinen vain itsessään, vaan myös tarvittavana alioperaationa muissa algoritmeissa. Esimerkiksi Edmond-Karpin algoritmi käyttää leveyssuuntaisen haun maksimivuo-ongelman ratkaisemiseksi; multiple sequence alignment -ongelmaa on ruvettu viime vuosikymmeninä ratkomaan myös heuristisin polunhakualgoritmein.
 
-Verkoista puhuttaessa verkko $G$ on kaksikko $(V, A)$, jossa $V$ on solmujen joukko, ja $A \subset V \times V$ on (suunnattujen) kaarien joukko. Suuntaamaton verkko $G' = (V, E)$ voidaan aina simuloida suunnatulla verkolla $G= (V, A)$ siten, että jokaista suuntaamatonta kaarta $\{ u, v \} \in E$ kohti laitetaan $A$:han kaaret $(u, v)$ ja $(v, u)$. (Suunnattu verkko on suuntamattoman yleistys.) Polunhakua varten, verkosta erotellaan kaksi solmua: lähtösolmu $s$ ja maalisolmu $t$. Jatkossa, $n = |V|$ ja $m = |E|$; näin esimerkiksi leveyssuuntaisen haun aikavaativuus on $O(n + m)$. Polku on $\gamma_k = \langle u_0, u_1, \dots, u_k \rangle$, missä mikään solmu ei esiinny yhtä kertaa enempää, ja verkossa on kaari $(u_i, u_{i + 1})$ jokaisella $i = 0, 1, \dots, k - 1$. Polkuun liittyvä kustannus on sen kaarien painojen summa, ja mitä tulee itse painoihin, ne oletetaan olevan ei-negatiivisia. Ei-painotettujen verkojen kohdalla, jokaisen kaaren paino oletetaan olevan 1.
+Verkoista puhuttaessa verkko $G$ on kaksikko $(V, A)$, jossa $V$ on solmujen joukko, ja $A \subset V \times V$ on (suunnattujen) kaarien joukko. Suuntaamatonta verkkoa $G' = (V, E)$ voidaan aina simuloida suunnatulla verkolla $G= (V, A)$ siten, että jokaista suuntaamatonta kaarta $\{ u, v \} \in E$ kohti laitetaan $A$:han kaaret $(u, v)$ ja $(v, u)$. (Suunnattu verkko on suuntaamattoman yleistys.) Polunhakua varten, verkosta erotellaan kaksi solmua: lähtösolmu $s$ ja maalisolmu $t$. Jatkossa, $n = |V|$ ja $m = |E|$; näin esimerkiksi leveyssuuntaisen haun aikavaativuus on $O(n + m)$. Polku on $\gamma_k = \langle u_0, u_1, \dots, u_k \rangle$, missä mikään solmu ei esiinny yhtä kertaa enempää, ja verkossa on kaari $(u_i, u_{i + 1})$ jokaisella $i = 0, 1, \dots, k - 1$. Polkuun liittyvä kustannus on sen kaarien painojen summa, ja mitä tulee itse painoihin, niiden oletetaan olevan ei-negatiivisia. Ei-painotettujen verkojen kohdalla, jokaisen kaaren paino oletetaan olevan 1.
 
 % --- References ---
 %
@@ -150,7 +150,7 @@ Verkoista puhuttaessa verkko $G$ on kaksikko $(V, A)$, jossa $V$ on solmujen jou
 %
 % instead.
 \section{Tavallisimmat algoritmit}
-Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa \cite{Dijkstra59}. Algoritmi voidaan pitää yhdistävän ''ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan A$^{\ast}$-algoritminsa,  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta \cite{Hart68}. Erona on kuitenkin se, että A$^{\ast}$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvo, joka on siis $f(u) = g(u) + h(u)$, missö $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että A$^{\ast}$ ''tietää'' mihin suuntaan haku on suunnattava, jota pääsisi maalisolmuun, ainakin paremmin kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ''kaikkiin suuntiin''.
+Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka toimii polynomisessa ajassa \cite{Dijkstra59}. Algoritmin voidaan katsoa yhdistävän ''ahneuden'' (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan A$^{\ast}$-algoritminsa \cite{Hart68},  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta. Erona on kuitenkin se, että A$^{\ast}$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvo, joka on siis $f(u) = g(u) + h(u)$, missä $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että A$^{\ast}$ ''tietää'' mihin suuntaan haku on suunnattava, jota päästäisiin maalisolmuun, ainakin paremmin kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ''kaikkiin suuntiin''.
 \begin{finalgo}
 \nonl Monikkosijoitus \\
 $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
@@ -184,7 +184,7 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
 \label{alg:unidijkstra}
 \label{Dijkstra}
 \end{finalgo}
-\noindent A$^{\ast}$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin (Algoritmi \ref{alg:unidijkstra}), paitsi että rivillä 3 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. Molemmat kutsuvat \textsc{Traceback-Path}-rutiinin, joka siis muodostaa lyhimmän polun ''edeltäjäpuusta'' (engl. \textit{predecessor tree}) ajassa $\Theta(N)$, missä $N$ on lyhimmän polun solmujen määrä. On huomattava, että A$^{\ast}$ palautuu Dijkstran algoritmiin määrittelemällä $h(u) = 0$ jokaisella $u \in V$.
+\noindent A$^{\ast}$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin (Algoritmi \ref{alg:unidijkstra}). Erotuksena rivillä 3 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. Molemmat kutsuvat \textsc{Traceback-Path}-rutiinin, joka siis muodostaa lyhimmän polun ''edeltäjäpuusta'' (engl. \textit{predecessor tree}) ajassa $\Theta(N)$, missä $N$ on lyhimmän polun solmujen määrä. On huomattava, että A$^{\ast}$ palautuu Dijkstran algoritmiin määrittelemällä $h(u) = 0$ jokaisella $u \in V$.
 \begin{finalgo}
 $u = x$ \\
 $p = \langle  \rangle$ \\
@@ -206,11 +206,11 @@ $u = \pi(u)$
 \end{finalgo}
 
 \section{Kaksisuuntainen haku}
-Vaikka A$^{\ast}$ on tyypillisesti tehokkaampi kuin Dijkstran algoritmi, käyttämällä \textit{kaksisuuntaista} hakua, voidaan päästää verrattavissa olevaan suorituskykyyn. Ajatus kaksisuuntaisuuden takana on se, että algoritmi kasvattaa kaksi hakupuuta, yksi normaaliin tapaan ja toinen maalisolmusta ihan kuin kaaret olisivat ''käännetty'' päinvastaiseen suuntaan, kunnes kaksi hakuavaruutta ''kohtaavat'' keskellä. Nyt jos lyhin polku koostuu $N$ kaaresta, ja verkon solmujen keskiarvoinen aste on $d$, tavallinen, eli yksisuuntainen haku tekee työn
+Vaikka A$^{\ast}$ on tyypillisesti tehokkaampi kuin Dijkstran algoritmi, käyttämällä \textit{kaksisuuntaista} hakua, voidaan päästää verrattavissa olevaan suorituskykyyn. Ajatus kaksisuuntaisuuden takana on se, että algoritmi kasvattaa kaksi hakupuuta: yhden normaaliin tapaan ja toisen maalisolmusta ihan kuin kaaret olisi ''käännetty'' päinvastaiseen suuntaan, kunnes kaksi hakuavaruutta ''kohtaavat'' keskellä. Nyt jos lyhin polku koostuu $N$ kaaresta, ja verkon solmujen keskiarvoinen aste on $d$, tavallinen, eli yksisuuntainen haku vaatii ajan
 \[
 \sum_{i = 0}^N d^i,
 \]
-kun kaksisuuntainen olisi tehnyt vain
+kun kaksisuuntainen vaatii vaan
 \[
 2 \sum_{i = 0}^{\lceil N / 2 \rceil} d^i.
 \]
@@ -282,20 +282,20 @@ $m = \textbf{nil}$ \\
 	$\textsc{Expand}(\text{OPEN},$ \\
 	$\phantom{\textsc{Expand}(}\text{CLOSED},$ \\
 	$\phantom{\textsc{Expand}(}\textsc{CLOSED}_{REV},$ \\ 
-	$\phantom{\textsc{Expand}(}g, g_{REV}, \pi, \mu, m, e_f, w)$ \\
+	$\phantom{\textsc{Expand}(}g, g_{REV}, \pi, \mu, m, e, w)$ \\
   }
   \Else{
 	$\textsc{Expand}(\text{OPEN}_{REV},$ \\
 	$\phantom{\textsc{Expand}(}\text{CLOSED}_{REV},$ \\
 	$\phantom{\textsc{Expand}(}\textsc{CLOSED},$ \\ 
-	$\phantom{\textsc{Expand}(}g_{REV}, g, \pi_{REV}, \mu, m, e_b, w)$ \\
+	$\phantom{\textsc{Expand}(}g_{REV}, g, \pi_{REV}, \mu, m, e_{REV}, w)$ \\
   }
 }
 \KwRet $\langle  \rangle$ \\
 \caption{\textsc{Bidirectional-Dijkstra-Shortest-Path}$(G, s, t, w)$}
 \label{alg:bidijkstra}
 \end{finalgo}
-$e_f$ on kuvaus, jolle $e_f(u) = \{ v \in V \colon (u, v) \in A \}$ jokaisella $u \in V$, ja $e_b(u) = \{ v \in V \colon (v, u) \in A \}$. Molemmat siis määrittelevät ''laajentumisoperaattorit'' (engl. \textit{expansion operator}): $e_f$ normaalissa haussa, ja $e_b$ käännetyssä haussa.
+Laajentumisoperaattoreina (engl. \textit{expansion operator}) kaksisuuntaisessa haussa on määriteltävä funktiot $e, e_{REV} \colon V \to \mathcal{P}(V)$, joille $e(u) = \{ v \in V \colon (u, v) \in A \}$ ja $e_{REV}(u) = \{ v \in V \colon (v, u) \in A \}$. Nyt siis $e(u)$ antaa solmun $u$ lapsisolmut, ja $e_{REV}(u)$ sen vanhempainsolmut, jolloin $e$ käytetään normaalissa ja $e_{REV}$ käännetyssä haussa.
 \begin{finalgo}
 \If{$\underset{x \in \text{OPEN}}{\min} g(x) + \underset{x \in \text{OPEN}_{REV}}{\min} g_{REV}(x) \geq \mu$}{
   \KwRet \textsc{Traceback-Path}$(m, \pi, \pi_{REV})$\\
@@ -308,9 +308,9 @@ $e_f$ on kuvaus, jolle $e_f(u) = \{ v \in V \colon (u, v) \in A \}$ jokaisella $
 \subsection{Kaksisuuntainen A$^{\ast}$}
 Kaksisuuntaisen A$^{\ast}$:n saa aikaan muuttamalla algoritmin \ref{alg:expand} rivillä 1 esiintyvä $g(x)$ $f(x)$:ksi ja muuttamalla \textsc{Terminate}-rutiinin ehto seuraavanlaiseksi:
 \[
-\max( \underset{x \in \textsc{OPEN}}{f(x)}, \underset{x \in \textsc{OPEN}_{REV}}{f_{REV}(x)} ) \geq \mu,
+\max( \underset{x \in \textsc{OPEN}}{\min} f(x), \underset{x \in \textsc{OPEN}_{REV}}{\min}f_{REV}(x) ) \geq \mu,
 \]
-jonka ehdotti Ira Pohl vuonna 1971 algoritmissaan BHPA \cite{Pohl71}.
+joka on siis Ira Pohlin vuonna 1971 ehdotetun BHPA-algoritminsa pysähtymisehto \cite{Pohl71}.
 
 Vuonna 2007 Taeg-Keun Whangbo ehdotti toisenlaisen kaksisuuntaisen heuristisen hakualgoritmin \cite{Whangbo07}. $h$-arvon sijasta, määritellään
 \begin{align*}
@@ -325,7 +325,7 @@ L^2_{\min} & \leq \underset{x \in \text{OPEN}_{REV}}{\min} (g_{REV}(x) + l_{REV}
 missä $L_{\min}^1$ on lyhimmän $s, p$ -polun kustannus normaalin haun puussa, ja $L_{\min}^2$ analogisesti lyhimmän $p, t$ -polun kustannus vastakkainsuuntaisessa haussa. Whangbo raportoi tavallisen A$^{\ast}$:n vievän yhteensä 372 aikayksikköä laskettuna yhteen yli joukon hakuja. Samalla datalla BHPA vie 509 aikayksikköä, ja Whangbon variantti 209 aikayksikköä (huomaa BHPA:n vievän enemmän aikaa kuin tavallinen A$^{\ast}$).
 
 \section{Prioriteettijonon valinta}
-Polkua hakiessa painotetussa verkossa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
+Polkua haettaessa painotetussa verkossa joudutaan käyttäämään prioriteettijonoja, jotka ovat tarpeellisia pitääkseen haut optimaaleina, ja joiden oletetaan tarjoavan ainakin neljä operaatiota:
 \begin{enumerate}
 \item \textsc{Insert}$(H, x, k)$ tallettaakseen solmun $x$ sen prioriteetin $k$ kera,
 \item \textsc{Decrease-Key}$(H, x, k)$ päivittääkseen solmun $x$ talletetun prioriteetin (pienemmäksi),
@@ -350,12 +350,12 @@ Jos kuitenkin kaarien painot ovat kokonaislukuja, $O(m + n \log n)$-rajaa voidaa
 Mikkel Thorup esitti vuonna 2003 keon, jonka poisto-operaatio käy ajassa $O(\log \log \min n)$ ja muut operaatiot vakioajassa \cite{Thorup03}. Jos kuitenkin kokonaislukupainot ovat väliltä $[0, N)$, poisto-operaatio voidaan suorittaa ajassa $O(\log \log \min \{ n, N \})$. Nyt selvästi haun aikavaativuus tällaisella keolla on $O(m + n \log \log \min \{n, N \})$.
 
 \section{Kaikkien parien lyhimmät polut}
-Toisinaan on annettu $n$ solmua ja halutaan löytää lyhimmät polut kaikkien kahden eri solmun välillä. Yksi tehokkaimmista algoritmeista on Floyd-Warshallin algoritmi, joka käy ajassa $\Theta(n^3)$, eikä sen toiminta riipu kaarien määrästä $m$. Ellei kohdeverkko ole täysi ($m = o(n^2)$), Johnsonin algoritmi saattaa olla parempi valinta, sillä Fibonacci-keolla edellämainittu käy ajassa $O(n^2 \log n + nm)$. Ajatus Johnsonin algoritmissa on ensin tarkistaa, ettei verkossa ole negatiivisen kustannuksen omaava sykli, minkä jälkeen algoritmi ajaa $n$ kertaa Dijkstran algoritmin jokaisesta solmusta, ja jokaisella kerralla hakee kokonaisen lyhimpien polkujen puun. 
+Toisinaan on annettu $n$ solmua ja halutaan löytää lyhimmät polut kaikkien kahden eri solmun välillä. Yksi tehokkaimmista algoritmeista on Floyd-Warshallin algoritmi, joka käy ajassa $\Theta(n^3)$, eikä sen toiminta riipu kaarien määrästä $m$. Ellei kohdeverkko ole täysi ($m = o(n^2)$), Johnsonin algoritmi saattaa olla parempi valinta, sillä Fibonacci-keolla edellämainittu käy ajassa $O(n^2 \log n + nm)$. Ajatus Johnsonin algoritmissa on ensin tarkistaa, ettei verkossa ole sykliä, jonka kokonaispaino on negatiivinen, minkä jälkeen algoritmi ajaa $n$ kertaa Dijkstran algoritmin jokaisesta solmusta, ja jokaisella kerralla hakee kokonaisen lyhimpien polkujen puun. 
 
-Ylläesitetyistä aikavaativuuksista ilmenee, ettei asianomaiset algoritmit ole tarpeeksi tehokkaita jo $n$:n arvoilla yli 10000. Jos kuitenkin ongelman koko sallii kaikkien parien algoritmin ajon, algoritmi palauttaa ''edeltäjämatriisin'' (engl. \textit{predecessor matrix}), josta $N$:n solmun lyhin polku voidaan rakentaa ajassa $\Theta(N)$, mitä ei pysty parantamaan tuon enempää, ei ainakaan ilman edistynempää algoritmiikkaa. (Ja vaikka voisikin, polun tulostaminen ja/tai piirtäminen on jo vähintään $\Omega(N)$.)
+Yllä esitetyistä aikavaativuuksista ilmenee, etteivät asianomaiset algoritmit ole tarpeeksi tehokkaita jo $n$:n arvoilla $\geq$ 10000. Jos kuitenkin ongelman koko sallii kaikkien parien algoritmin ajon, algoritmi palauttaa ''edeltäjämatriisin'' (engl. \textit{predecessor matrix}), josta $N$:n solmun lyhin polku voidaan rakentaa ajassa $\Theta(N)$, mitä ei pysty parantamaan tuon enempää, ei ainakaan ilman edistynempää algoritmiikkaa. (Ja vaikka voisikin, polun tulostaminen ja/tai piirtäminen on jo vähintään $\Omega(N)$.)
 
 \section{Ruudukkoverkko ja jump point -haku}
-Ruudukkoverkko (engl. \textit{grid graph}) on suuntamattoman verkon erikoistapaus, ja sen rakenne voidaan määritellä siten, että kullakin solmulla on kahden kokonaisluvun koordinaatti, eli solmujoukko on $\{ (x, y) \colon 1 \leq x \leq w, 1 \leq y \leq h \}$, missä $w$ on ruudukkoverkon leveys ja $h$ on sen korkeus. Nyt kun on annettu kaksi solmua $(x_1, y_1)$ ja $(x_2, y_2)$, jos vain yksi koordinaateista eroavat yksikön verran, kyseessä on vaaka- tai pystysuuntainen kaari ja sen painoksi asetetaan 1. Toisaalta, kun molemmat koordinaatit eroavat yksikön verran, kyseessä on vino kaari, jonka painoksi asetetaan $\sqrt{2}$. On selvää, että jo leveyssuuntainen haku on optimaali tällaisella verkolla, sillä aina kun se etenee vinottain, esim. solmusta $(x, y)$ solmuun $(x + 1, y - 1)$, se ohittaa kahden kaaren siirron solmun $(x + 1, y)$ tai $(x, y - 1)$ kautta, joka pidentäisi lyhimmän polun pituuden kahdella yksiköllä $\sqrt{2}$ sijaan. Heuristinen haku on kannattavaa tällaisella verkkotyypillä, sillä heuristiset funktiot kuten eukliidinen (tai Manhattan-metriikka, jos ei sallita vinot kaaret) on helppoa toteuttaa ilman esiprosessointia. Toisaalta, juuri tällaisella verkkotyypillä $A\ast$ kärsii polkujen ''symmetriasta'', kuten kuvasta \ref{fig:astarpathsymmetry} ilmenee. Jos siis solmujen $s$ ja $t$ molemmat koordinaatit eroavat, $A\ast$ kasvattaa suunnikkaanmuotoisen hakuavaruuden solmusta $s$ solmuun $t$, sillä niiden välissä on monta saman kustannuksen omaavaa polkua. Kuten yleensä erikoistapauksiin rajoittuessa, polunhaku ruudukolla voidaan tehdä paljon tehokkaammin. Vuonna 2011 Harabor ja Grastien esittivät ''jump point search'' -nimisen $A\ast$:n muunnelman, joka karsii pois polkusymmetriat ja etenee ''hyppien'' yli monen solmun siinä, missä muut algoritmit etenevät jokaisen välisolmun kautta \cite{Harabor11}.
+Ruudukkoverkko (engl. \textit{grid graph}) on suuntamattoman verkon erikoistapaus, ja sen rakenne voidaan määritellä siten, että kullakin solmulla on kahden kokonaisluvun koordinaatti, eli solmujoukko on $\{ (x, y) \colon 1 \leq x \leq w, 1 \leq y \leq h \}$, missä $w$ on ruudukkoverkon leveys ja $h$ on sen korkeus. Nyt kun on annettu kaksi solmua $(x_1, y_1)$ ja $(x_2, y_2)$, jos vain yksi koordinaateista eroavat yksikön verran, kyseessä on vaaka- tai pystysuuntainen kaari ja sen painoksi asetetaan 1. Toisaalta, kun molemmat koordinaatit eroavat yksikön verran, kyseessä on vino kaari, jonka painoksi asetetaan $\sqrt{2}$. On selvää, että jo leveyssuuntainen haku on optimaali tällaisella verkolla, sillä aina kun se etenee vinottain, esim. solmusta $(x, y)$ solmuun $(x + 1, y - 1)$, se ohittaa kahden kaaren siirron solmun $(x + 1, y)$ tai $(x, y - 1)$ kautta, joka pidentäisi lyhimmän polun pituuden kahdella yksiköllä $\sqrt{2}$ sijaan. Heuristinen haku on kannattavaa tällaisella verkkotyypillä, sillä heuristiset funktiot kuten euklidinen (tai Manhattan-metriikka, ellei vinoja kaareja sallita) on helppoa toteuttaa ilman esiprosessointia. Toisaalta, juuri tällaisella verkkotyypillä $A\ast$ kärsii polkujen ''symmetriasta'', kuten kuvasta \ref{fig:astarpathsymmetry} ilmenee. Jos siis solmujen $s$ ja $t$ molemmat koordinaatit eroavat, $A\ast$ kasvattaa suunnikkaanmuotoisen hakuavaruuden solmusta $s$ solmuun $t$, sillä niiden välissä on monta saman kustannuksen omaavaa polkua. Kuten yleensä erikoistapauksiin rajoittuessa, polunhaku ruudukolla voidaan tehdä paljon tehokkaammin. Vuonna 2011 Harabor ja Grastien esittivät ''jump point search'' -nimisen $A\ast$:n muunnelman, joka karsii pois polkusymmetriat ja etenee ''hyppien'' yli monen solmun siinä, missä muut algoritmit etenevät jokaisen välisolmun kautta \cite{Harabor11}.
 \begin{figure}
   \centering
   \begin{subfigure}[h]{0.45\textwidth}
@@ -371,7 +371,7 @@ Ruudukkoverkko (engl. \textit{grid graph}) on suuntamattoman verkon erikoistapau
   \caption{Polkusymmetria}
 \end{figure}
 
-\section{Dijkstran algoritmi kaarivipuilla}
+\section{Dijkstran algoritmi kaarivivuilla}
 Vuonna 2007 Möhring et al. esittivät mielenkiintoisen tavan nopeuttaa Dijkstran algoritmi \cite{Mohring07}. Ajatuksena on osittaa suunnatun verkon $G=(V, A)$ solmujoukko osioihin $V_1, \dots, V_p$ siten, että
 \[
 \bigcup_{i = 1}^p V_i = V,
@@ -380,7 +380,7 @@ ja $V_i \cap V_j = \emptyset$ jokaisella $i \neq j$. Ositus voidaan toteuttaa ku
 \[
 B_i = \{ v \in V_i \colon \exists(u, v) \in A \text{ siten että } r(v) \neq r(u) \}.
 \]
-Lisäksi, järjestelmä liittää jokaiseen verkon kaareen ''kaarivipuvektorin'' (engl. \textit{arc-flag vector}), jota voidaan toteuttaa $p$:n bitin bittivektorina. Nyt jokaisella osiolla $V_i$ järjestelmän esiprosessointialgoritmi ajaa ''takaperin'' tavallisen Dijkstran algoritmi kustakin rajasolmusta $b \in B_i$, ja asettaa tuloksena syntyvässä lyhimpien polkujen puussa jokaisen kaaren $a$ kohdalla $a$:n vipuvektorin $r(b)$:s bitti päälle. Tuloksena syntyvässä järjestelmässä, hakiessa polkua solmuun $t$, nopeutettu Dijkstran algoritmi voi karsia kaikki ne kaaret, joiden vektorin $r(t)$:s bitti ei ole päällä, ainakin niin kauan kunnes haku pääsee samaan osioon solmun $t$ kanssa. Tekniikka voidaan siis nähdä tasopainoilevan tavallisen Dijkstran algoritmin ($V_1 = V$) ja kaikkien parien algoritmin (kukin solmu on osio) välillä.
+Lisäksi, järjestelmä liittää jokaiseen verkon kaareen ''kaarivipuvektorin'' (engl. \textit{arc-flag vector}), jota voidaan toteuttaa $p$:n bitin bittivektorina. Nyt jokaisella osiolla $V_i$ järjestelmän esiprosessointialgoritmi ajaa ''takaperin'' tavallisen Dijkstran algoritmi kustakin rajasolmusta $b \in B_i$, ja asettaa tuloksena syntyvässä lyhimpien polkujen puussa jokaisen kaaren $a$ kohdalla $a$:n vipuvektorin $r(b)$:nnen bitin päälle. Tuloksena syntyvässä järjestelmässä, haettaessa polkua solmuun $t$, nopeutettu Dijkstran algoritmi voi karsia kaikki ne kaaret, joiden vektorin $r(t)$:s bitti ei ole päällä, ainakin niin kauan kunnes haku pääsee samaan osioon solmun $t$ kanssa. Tekniikka voidaan siis nähdä tasopainoilevan tavallisen Dijkstran algoritmin ($V_1 = V$) ja kaikkien parien algoritmin (kukin solmu on osio) välillä.
 
 \subsection{Ositustekniikat}
  Kuten ylläolevasta kävi ilmi, ''kaarivipu''-Dijkstra vaatii verkon solmujen osituksen, minkä jälkeen joudutaan esiprosessoimaan koko verkko. Koska esiprosessoinnin aika riipuu lineaarisesti kaikkien osioiden kaikkien rajasolmujen yhteenlasketusta määrästä, jälkimmäisen minimointi on toivottavaa. 
@@ -404,15 +404,15 @@ ja koko linjauksen kustannus on
 Lisäksi, määritellään $c(-,-) = 0$, ja aina kun jompikumpi merkki $a \in \Sigma$ ja toinen on väli -, käytetään merkkiparin kustannuksena em. välisakko. (Näin siis optimaalissa linjauksessa ei ole sarakkeita, joiden jokainen merkki on -.)
 
 \subsection{Ongelman muotoileminen verkkona}
-Kun on annettu sekvenssit $S_1, \dots, S_{\kappa}$, kukin niistä asetetaan $\kappa$-ulotteisen ''hilan'' (engl. \textit{lattice}) akseleiksi. Kukin solmu voidaan ajattella omistavan koordinaatit $(x_1, \dots, x_{\kappa})$, ja kun siitä siirrytään seuraavaan solmuun $(y_1, \dots, y_{\kappa})$, kukin $y_i$ on joko $x_i$ tai $x_i + 1$, jolloin niiden koordinaattien $y_i$ kohdalla, jotka eroavat koordinaatista $x_i$, luetaan $i$:nnen sekvenssin $y_i$:des merkki, ja muiden kohdalla ei lueta mitään, vaan laitetaan samaan sarakkeeseen välimerkki -. Selvästi, jokaisella hilan ''sisäsolmulla'' on tasan $2^{\kappa} - 1$ lapsisolmua, ja vaikka hilaverkko on syklitön, jo muutaman sekvenssin hila ei voida säilyttää muistissa eksplisiittisesti, vaan solmut joudutaan generoimaan vanhempainsolmuja laajennettaessa (sekvenssien pituus on sadan merkin suuruusluokkaa). Nyt ongelma palautuu reitinhakuongelmaksi, jossa on löydettävä lyhin polku hilan solmusta $(0, \dots, 0)$ solmuun $(|S_1|, \dots, |S_{\kappa}|)$.
+Kun on annettu sekvenssit $S_1, \dots, S_{\kappa}$, kukin niistä asetetaan $\kappa$-ulotteisen ''hilan'' (engl. \textit{lattice}) akseleiksi. Kukin solmu voidaan ajattella omistavan koordinaatit $(x_1, \dots, x_{\kappa})$, ja kun siitä siirrytään seuraavaan solmuun $(y_1, \dots, y_{\kappa})$, kukin $y_i$ on joko $x_i$ tai $x_i + 1$, jolloin niiden koordinaattien $y_i$ kohdalla, jotka eroavat koordinaatista $x_i$, luetaan $i$:nnen sekvenssin $y_i$:des merkki, ja muiden kohdalla ei lueta mitään, vaan laitetaan samaan sarakkeeseen välimerkki -. Selvästi, jokaisella hilan ''sisäsolmulla'' on tasan $2^{\kappa} - 1$ lapsisolmua, ja vaikka hilaverkko on syklitön, jo muutaman sekvenssin hilaa ei voida säilyttää muistissa eksplisiittisesti, vaan solmut joudutaan generoimaan vanhempainsolmuja laajennettaessa (sekvenssien pituus on sadan merkin suuruusluokkaa). Nyt ongelma palautuu reitinhakuongelmaksi, jossa on löydettävä lyhin polku hilan solmusta $(0, \dots, 0)$ solmuun $(|S_1|, \dots, |S_{\kappa}|)$.
 
 \subsection{Ratkaisu}
-Yoshizumi et al. raportoivat A$^{\ast}$:n pystyvän käsittelemään enintään 7 sekvenssia, sillä sen avoin ja suljettu listat kasvavat liian isoiksi, ja ehdottavat PEA$^{\ast}$ nimisen algoritmin (engl. \textit{Partial Expansion A}$^\ast$), jota voidaan ajatella uhraavan hieman aikaa pitääkseen listat pienempinä, jolloin algoritmi pystyy käsittelemään 8 sekvenssia \cite{Yoshizumi00}. Algoritmi lajittelee avoimen listan solmut ei $f$-, vaan $F$-arvojen perusteella, missä $F(u)$ on solmun $u$ ''ei-lupaavien'' solmujen pienin $f$-arvo. Myös on annettu ei-negaativinen katkaisuarvo $C$; (engl. \textit{cutoff value}). Lapsisolmu pidetään ''lupaavana'', jos sen $f$-arvo ei ole suurempi kuin vanhempainsolmunsa $F$-arvon ja $C$:n summa. Alunperin kunkin solmun $F$-arvo on sen $f$-arvo. Lisäksi, jos solmulla $u$ on ei-lupaavat lapsisolmut, $u$ laitetaan takaisin avoimeen listaan. 
+Yoshizumi et al. raportoivat A$^{\ast}$:n pystyvän käsittelemään enintään seitsemmän sekvenssia, sillä sen avoimet ja suljetut listat kasvavat liian isoiksi. He ehdottavat PEA$^{\ast}$ nimistä algoritmia (engl. \textit{Partial Expansion A}$^\ast$), jonka voidaan ajatella uhraavan hieman aikaa pitääkseen listat pienempinä, jolloin algoritmi pystyy käsittelemään 8 sekvenssia \cite{Yoshizumi00}. Algoritmi lajittelee avoimen listan solmut ei $f$-, vaan $F$-arvojen perusteella, missä $F(u)$ on solmun $u$ ''ei-lupaavien'' solmujen pienin $f$-arvo. Myös on annettu ei-negaativinen katkaisuarvo $C$; (engl. \textit{cutoff value}). Lapsisolmu pidetään ''lupaavana'', jos sen $f$-arvo ei ole suurempi kuin vanhempainsolmunsa $F$-arvon ja $C$:n summa. Alunperin kunkin solmun $F$-arvo on sen $f$-arvo. Lisäksi, jos solmulla $u$ on ei-lupaavat lapsisolmut, $u$ laitetaan takaisin avoimeen listaan. 
 
 Kaikki kaikkiaan, $C$:n arvolla 50, PEA$^{\ast}$, vähentää muistintarpeen 87\%, vaikka käyttää vain 20\% enemmän aikaa kuin A$^{\ast}$ hilassa, jossa solmun ja sen lapsen $f$-arvot eroavat enintään 396 yksikköä. Lisäksi, PEA$^{\ast}$:n suhde A$^{\ast}$:iin on se, että edellinen palautuu jälkimmäiseksi, kun $C = \infty$.
 
 \section{Lyhimmät polut ja rinnakkaisuus}
-Toistaiseksi lyhimpien polkujen haku ei juuri antanut paljon aihetta rinnakkaistamiseen. Vuonna 1998 Meyer ja Sanders esittivät $\Delta$-stepping -nimisen algoritminsa, joka asettaa kunkin saavutetun solmun $u$ omaan ''koriin'' (engl. \textit{bucket}) numero $i$ aina, kun $g(u) \in [(i - 1)\Delta, i\Delta)$, jolloin kukin säie käsittelee vain osan kaikista koreista. $2^{19}$ solmun verkolla, jonka keskiarvoinen asteen 3, Meyer ja Sanders raportoivat peräkkäisen (engl. \textit{sequential}) version olleen 3.1 kertaa nopeampi kuin ''optimoitu'' Dijkstran algoritmi, ja 16 suorittimen hajautetussa järjestelmässä nopeutus 9.2 on mitattu suhteessa peräkkäiseen $\Delta$-stepping -algoritmiin. On huomattava, että algoritminsa toiminta riippuu $\Delta$:n arvosta, ja Meyer et al. ehdottavat arvon $\Delta = 4/d$, missä $d$ on keskiarvoinen solmun aste.
+Toistaiseksi lyhimpien polkujen haku ei ole juuri antanut paljon aihetta rinnakkaistamiseen. Vuonna 1998 Meyer ja Sanders esittivät $\Delta$-stepping -nimisen algoritminsa, joka asettaa kunkin saavutetun solmun $u$ omaan ''koriin'' (engl. \textit{bucket}) numero $i$ aina, kun $g(u) \in [(i - 1)\Delta, i\Delta)$, jolloin kukin säie käsittelee vain osan kaikista koreista. $2^{19}$ solmun verkolla, jonka keskiarvoinen asteen 3, Meyer ja Sanders raportoivat peräkkäisen (engl. \textit{sequential}) version olleen 3.1 kertaa nopeampi kuin ''optimoitu'' Dijkstran algoritmi, ja 16 suorittimen hajautetussa järjestelmässä nopeutus 9.2 on mitattu suhteessa peräkkäiseen $\Delta$-stepping -algoritmiin. On huomattava, että algoritminsa toiminta riippuu $\Delta$:n arvosta, ja Meyer et al. ehdottavat arvon $\Delta = 4/d$, missä $d$ on keskiarvoinen solmun aste.
 
 Rinnakkaistamiseen liittyvien käytännön ongelmista huolimatta, myös kaksisuuntaisen A$^{\ast}$:n variantti nimeltään NBA$\ast$ sai rinnakkaisen version: PNBA$\ast$ käyttää kaksi säiettä, kukin omaa hakusuuntaa varten, ja sisältää suhteellisen vähän synkronoinnin tarvetta \cite{Rios}. Esimerkiksi, 15-palapelillä (engl. \textit{15-puzzle}), NBA$\ast$ löysi lyhimmän 58 siirron polun noin 2.5 kertaa nopeammin kuin A$^{\ast}$, ja PNBA$\ast$ oli noin tasan kaksi kertaa nopeampi kuin edellinen.
 

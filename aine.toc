@@ -6,12 +6,12 @@
 \contentsline {subsection}{\numberline {3.2}Kaksisuuntainen A$^{\ast }$}{4}{subsection.3.2}
 \contentsline {section}{\numberline {4}Prioriteettijonon valinta}{5}{section.4}
 \contentsline {section}{\numberline {5}Kaikkien parien lyhimm\IeC {\"a}t polut}{7}{section.5}
-\contentsline {section}{\numberline {6}Ruudukkoverkko ja jump point -haku}{7}{section.6}
-\contentsline {section}{\numberline {7}Dijkstran algoritmi kaarivipuilla}{8}{section.7}
+\contentsline {section}{\numberline {6}Ruudukkoverkko ja jump point -haku}{8}{section.6}
+\contentsline {section}{\numberline {7}Dijkstran algoritmi kaarivivuilla}{8}{section.7}
 \contentsline {subsection}{\numberline {7.1}Ositustekniikat}{9}{subsection.7.1}
 \contentsline {subsection}{\numberline {7.2}Tulokset}{10}{subsection.7.2}
 \contentsline {section}{\numberline {8}Polunhaku ja Multiple Sequence Alignment \\-ongelma}{10}{section.8}
-\contentsline {subsection}{\numberline {8.1}Ongelman muotoileminen verkkona}{10}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.1}Ongelman muotoileminen verkkona}{11}{subsection.8.1}
 \contentsline {subsection}{\numberline {8.2}Ratkaisu}{11}{subsection.8.2}
 \contentsline {section}{\numberline {9}Lyhimm\IeC {\"a}t polut ja rinnakkaisuus}{11}{section.9}
 \contentsline {section}{L\IeC {\"a}hteet}{12}{section*.10}
