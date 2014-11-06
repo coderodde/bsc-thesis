@@ -1,0 +1,93 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetAlFnt{\small}
+\SetAlCapFnt{\large}
+\SetAlCapNameFnt{\large}
+
+%%% algorithm2e environment with "Algoritmi"-caption.
+\newenvironment{finalgo}[1][htb]{
+  \renewcommand{\algorithmcfname}{Algoritmi}
+  \begin{algorithm}[#1]
+}{\end{algorithm}}
+
+%%% To be able to not numbering individual lines:
+\let\oldnl\nl% Store \nl in \oldnl
+\newcommand{\nonl}{\renewcommand{\nl}{\let\nl\oldnl}}
+
+%%% argmin
+\DeclareMathOperator*{\argmin}{arg\, min}
+
+\title{{\rmfamily\scshape Lyhimpien polkujen hakualgoritmit ja -järjestelmät}}
+\author{$\mathfrak{Rodion \, Efremov}$}
+\date{}
+\institute{Tietojenkäsittelytieteen laitos, Helsingin yliopisto}
+
+\usetheme{Ilmenau}
+\usecolortheme{beaver}
+\usefonttheme[onlymath]{serif}
+
+\begin{document}
+\maketitle
+
+%%% BEGIN: Määritelmät
+\begin{frame}
+\frametitle{Verkot}
+\begin{itemize}
+\item Suunnattu verkko on $G = (V, A)$, missä $V$ on solmujen joukko ja $A \subset V \times V$ on suunnattujen kaarien joukko.
+
+\item Suuntaamaton verkko $G = (V, E)$ voidaan aina simuloida suunnatulla verkolla $(V, A)$ laittamalla $A$:han kaaret $(u, v)$ ja $(v, u)$ jokaisella suuntaamattomalla kaarella $\{u, v\} \in E$.
+
+\item Jatkossa merkitsemme $n = |V|$ ja $m = |E|$.
+\end{itemize}
+\end{frame}
+%%% END: Määritelmät
+
+%%% BEGIN: BFS
+\begin{frame}
+\frametitle{Leveyssuuntainen haku}
+\begin{itemize}
+\item Toteutus vaatii vain jonon ja hajautustaulun.
+\item Toimii ajassa $\mathcal{O}(n + m) \approx \sum_{i = 0}^N d_i$, missä $N$ on lyhimmän polun solmujen määrä ja $d$ keskiarvoinen solmun aste.
+\end{itemize}
+\end{frame}
+%%% END: BFS
+
+%%% BEGIN: BFS pseudocode
+\begin{frame}
+
+\begin{finalgo}[H]
+$Q, \pi = ( \{ s \}, \{ (s, \textbf{nil}) \} )$
+$\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
+\While{$|\text{OPEN}| > 0$}{
+ $u = \underset{x \in \text{OPEN}}{\argmin}\, g(x)$ \\
+ \If{$x \textbf{\emph{ is }} t$}{
+   \KwRet \textsc{Traceback-Path$(t, \pi, \textbf{nil})$}\\
+ }
+ $\text{OPEN} = \text{OPEN} - \{ u \}$ \\
+ $\text{CLOSED} = \text{CLOSED} \cup \{ x \}$ \\
+ \nonl Jokaisella solmun $x$ lapsisolmulla $u$, tee... \\
+ \For{$(x, u) \in G.A$}{
+   \If{$u \in \text{\upshape CLOSED}$}{
+     $\textbf{continue}$ \\
+   }
+   $g' = g(x) + w(x, u)$ \\
+   \If{$u \not \in \text{\upshape OPEN}$}{
+     $\text{OPEN} = \text{OPEN} \cup \{ u \}$ \\
+     $g(u) = g'$ \\
+     $\pi(u) = x$ \\
+   }
+ }
+}
+\nonl Ei $s, t$ -polkua verkossa $G$. \\
+\KwRet $\langle \rangle$ \\
+\caption{\textsc{Breadth-First-Search}$(G, s, t)$}
+\end{finalgo}
+
+\end{frame}
+%%% END: BFS pseudocode
+
+\end{document}
