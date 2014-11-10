@@ -1,0 +1,69 @@
+\documentclass[14pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsfonts,amsmath,amssymb,amsthm,booktabs,color,enumitem,graphicx}
+\usepackage[pdftex,hidelinks]{hyperref}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{subcaption}
+
+\DeclareMathOperator*{\argmin}{arg\, min}
+
+% Algorithm2e environment with "Algoritmi"-caption.
+\newenvironment{finalgo}[1][htb]{
+  \renewcommand{\algorithmcfname}{Algoritmi}
+  \begin{algorithm}[#1]
+}{\end{algorithm}}
+
+
+% To be able to not numbering individual lines:
+\let\oldnl\nl% Store \nl in \oldnl
+\newcommand{\nonl}{\renewcommand{\nl}{\let\nl\oldnl}}
+
+\begin{document}
+\begin{finalgo}
+$u = x$ \\
+$p = \langle  \rangle$ \\
+\While{$u \textbf{\emph{ is not nil}}$}{
+lisää $u$ $p$:n alkuun \\
+$u = \pi(u)$
+}
+\nonl Kaksisuuntainen haku? \\
+\If{$\pi_{REV} \textbf{\emph{ is not nil}}$}{
+  $u = \pi_{REV}(x)$ \\
+  \While{$u \textbf{\emph{ is not nil}}$}{
+    lisää $u$ $p$:n loppuun \\
+    $u = \pi_{REV}(u)$ \\
+  }
+}
+\KwRet $p$ \\
+\caption{\textsc{Traceback-Path}$(x, \pi, \pi_{REV})$}
+\end{finalgo}
+
+\begin{finalgo}
+  \SetKw{KwNil}{nil}
+  \SetKw{KwIs}{is }
+  \SetKw{KwNot}{not }
+  \SetKw{KwMappedIn}{yet mapped in }
+  $Q = \langle s \rangle$ \\
+  $\pi(s) = \KwNil$ \\
+  \While{|Q| > 0}{
+    $u = \textsc{Dequeue}(Q)$ \\
+    \If{$u $ \KwIs $t$}{
+      \KwRet \textsc{Traceback-Path}$(u, \pi, \KwNil)$ \\
+    }
+    \For{$(u, v) \in G.A$}{
+      \If{$v \; \KwIs \KwNot \KwMappedIn \pi$}{
+        $\pi(v) = u$ \\
+        $\textsc{Enqueue}(Q, u)$ \\
+      }
+    }
+    \KwRet $\langle \rangle$ \\
+  }
+\caption{\textsc{Breadth-First-Search}$(G, s, t)$}
+\end{finalgo}
+\end{document}
