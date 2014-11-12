@@ -51,7 +51,7 @@ $u = \pi(u)$
   \SetKw{KwMappedIn}{yet mapped in }
   $Q = \langle s \rangle$ \\
   $\pi(s) = \KwNil$ \\
-  \While{|Q| > 0}{
+  \While{$|Q| > 0$}{
     $u = \textsc{Dequeue}(Q)$ \\
     \If{$u $ \KwIs $t$}{
       \KwRet \textsc{Traceback-Path}$(u, \pi, \KwNil)$ \\
@@ -66,4 +66,48 @@ $u = \pi(u)$
   }
 \caption{\textsc{Breadth-First-Search}$(G, s, t)$}
 \end{finalgo}
+
+\begin{finalgo}
+  \SetKw{KwNil}{nil}
+  \SetKw{KwIs}{is }
+  \SetKw{KwNot}{not }
+  \SetKw{KwYetMappedIn}{yet mapped in }
+  \SetKw{KwMappedIn}{mapped in }
+  \SetKw{KwAnd}{and }
+  $Q, \pi, d = (\langle s \rangle, (s, \KwNil), (s, 0))$ \\
+  $Q_{REV}, \pi_{REV}, d_{REV} = (\langle t \rangle, (t, \KwNil), (t, 0))$ \\
+  $\tau, \mu = (\KwNil, \infty)$ \\
+  \While{$|Q||Q_{REV}| > 0$}{
+    \If{$\tau$ \KwIs \KwNot \KwNil \KwAnd $d(\textsc{Head}(Q)) + d_{REV}(\textsc{Head}(Q_{REV})) \geq \mu$}{
+        \KwRet \textsc{Traceback-Path}$(\tau, \pi, \pi_{REV})$ \\
+    }
+    $u = \textsc{Dequeue}(Q)$ \\
+    \If{$u$ \KwIs \KwMappedIn $\pi_{REV}$ \KwAnd $\mu > d(u) + d_{REV}(u)$}{
+        $\mu = d(u) + d_{REV}(u)$\\
+        $\tau = u$ \\
+    }
+    \For{$(u, v) \in G.A$}{
+      \If{$v \; \KwIs \KwNot \KwMappedIn \pi$}{
+        $\pi(v) = u$ \\
+        $\textsc{Enqueue}(Q, v)$ \\
+        $d(v) = d(u) + 1$ \\
+      }
+    }
+    $u = \textsc{Dequeue}(Q_{REV})$ \\
+    \If{$u$ \KwIs \KwMappedIn $\pi$ \KwAnd $\mu > d(u) + d_{REV}(u)$}{
+        $\mu = d(u) + d_{REV}(u)$\\
+        $\tau = u$ \\
+    }
+    \For{$(v, u) \in G.A$}{
+      \If{$v \; \KwIs \KwNot \KwMappedIn \pi_{REV}$}{
+        $\pi_{REV}(v) = u$ \\
+        $\textsc{Enqueue}(Q_{REV}, v)$ \\
+        $d_{REV}(v) = d_{REV}(u) + 1$ \\
+      }
+    }
+  }
+  \KwRet $\langle \rangle$ \\
+\caption{\textsc{Bidirectional-Breadth-First-Search}$(G, s, t)$}
+\end{finalgo}
+
 \end{document}
