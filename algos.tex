@@ -87,7 +87,7 @@ $u = \pi(u)$
         $\tau = u$ \\
     }
     \For{$(u, v) \in G.A$}{
-      \If{$v \; \KwIs \KwNot \KwMappedIn \pi$}{
+      \If{$v \; \KwIs \KwNot \KwYetMappedIn \pi$}{
         $\pi(v) = u$ \\
         $\textsc{Enqueue}(Q, v)$ \\
         $d(v) = d(u) + 1$ \\
@@ -99,7 +99,7 @@ $u = \pi(u)$
         $\tau = u$ \\
     }
     \For{$(v, u) \in G.A$}{
-      \If{$v \; \KwIs \KwNot \KwMappedIn \pi_{REV}$}{
+      \If{$v \; \KwIs \KwNot \KwYetMappedIn \pi_{REV}$}{
         $\pi_{REV}(v) = u$ \\
         $\textsc{Enqueue}(Q_{REV}, v)$ \\
         $d_{REV}(v) = d_{REV}(u) + 1$ \\
