@@ -42,18 +42,28 @@
 
 %%% BEGIN: Määritelmät
 \begin{frame}
-\frametitle{Verkot}
-\begin{itemize}
-\item Suunnattu verkko on $G = (V, A)$, missä $V$ on solmujen joukko ja $A \subset V \times V$ on suunnattujen kaarien joukko.
+  \frametitle{Verkot}
+  \begin{itemize}
+    \item Suunnattu verkko on $G = (V, A)$, missä $V$ on solmujen joukko ja $A \subset V \times V$ on suunnattujen kaarien joukko.
 
-\item Suuntaamaton verkko $G = (V, E)$ voidaan aina simuloida suunnatulla verkolla $(V, A)$ laittamalla $A$:han kaaret $(u, v)$ ja $(v, u)$ jokaisella suuntaamattomalla kaarella $\{u, v\} \in E$.
+    \item Suuntaamaton verkko $G = (V, E)$ voidaan aina simuloida suunnatulla verkolla $(V, A)$ laittamalla $A$:han kaaret $(u, v)$ ja $(v, u)$ jokaisella suuntaamattomalla kaarella $\{u, v\} \in E$.
 
-\item Jatkossa merkitsemme $n = |V|$ ja $m = |E|$.
+    \item Jatkossa merkitsemme $n = |V|$ ja $m = |E|$.
+  \end{itemize}
+\end{frame}
 
-\item $k$:n kaaren polku on $\gamma = \langle u_0, u_1, \dots, u_k \rangle$, missä kukin solmu esiintyy vain kerran ja jokaisella $i \in \{ 0, 1, \dots, k - 1 \}$ $(u_i, u_{i + 1}) \in A$.
+\begin{frame}
+  \frametitle{Verkot}
+  \begin{itemize}
+    \item $k$:n kaaren polku on $\gamma = \langle u_0, u_1, \dots, u_k \rangle$, missä kukin solmu esiintyy vain kerran ja jokaisella $i \in \{ 0, 1, \dots, k - 1 \}$ $(u_i, u_{i + 1}) \in A$.
 
-\item Painotettujen verkkojen kohdalla otaksumme kunkin kaaren $(u, v)$ painon $w(u, v)$ olevan \textbf{ei-negatiivinen}.
-\end{itemize}
+    \item Painotettujen verkkojen kohdalla otaksumme kunkin kaaren $(u, v)$ painon $w(u, v)$ olevan \textbf{ei-negatiivinen}.
+    
+    \item Suuntamattomassa verkossa solmun $u$ ''aste'' on $d(u) = |\{ \{u, v\} \colon \{ u, v \} \in E \}|$. 
+    
+    \item Suunnatussa verkossa solmun $u$ ''sisäänaste'' (engl. \textit{indegree}) on $\textrm{deg}^-(u) = | \{ (v, u) \colon (v, u) \in A \} |$ ja
+      ''ulosaste'' (engl. \textit{outdegree}) on $\textrm{deg}^+(u) = | \{ (u, v) \colon (u, v) \in A \} |$.
+  \end{itemize}
 \end{frame}
 %%% END: Määritelmät
 
@@ -63,7 +73,7 @@
 \begin{itemize}
 \item Löytää lyhimmän polun (yhden monesta mahdollisesta) painottamattomassa verkossa.
 \item Toteutus vaatii vain jonon ja hajautustaulun.
-\item Toimii ajassa $\mathcal{O}(n + m) \approx \sum_{i = 0}^N d_i$, missä $N$ on lyhimmän polun solmujen määrä ja $d$ keskiarvoinen solmun aste.
+\item Toimii ajassa $\mathcal{O}(n + m) \approx \sum_{i = 0}^N d_i$, missä $N$ on lyhimmän polun solmujen määrä ja $d$ keskiarvoinen solmun aste tai solmun ulosaste verkon tyypistä riippuen.
 \end{itemize}
 \end{frame}
 %%% END: BFS
@@ -115,17 +125,35 @@ Tarvitaan vain kuvaus $\pi$ (ja myös $\pi_{REV}$ mikäli polku oli haettu kaksi
 \begin{frame}
   \frametitle{Dijkstran algoritmi}
   \begin{itemize}
-    \item Vuonna 1959 Edsger W. Dijkstra esitti kuuluisan polunhakualgoritminsa, joka käy polynomisessa ajassa.
-    \item LIFO jonon sijasta prioriteettijono; kutsutaan usein ''avoimeksi'' listaksi (engl. \textit{open set}).
+    \item Vuonna 1959 Edsger W. Dijkstra esitti kuuluisan polunhakualgoritminsa, joka toimii polynomisessa ajassa.
+    \item FIFO jonon sijasta prioriteettijono; kutsutaan usein ''avoimeksi'' listaksi (engl. \textit{open set}).
     \item Hajautustauluun perustuva joukkorakenne; kutsutaan usein ''suljetuksi' listaksi (engl. \textit{closed set}).
     \item $g$-kuvaus, joka kuvaa kunkin saavutetun solmun toistaiseksi pienempään etäisyyteen lähtösolmusta laskettuna.
     \item $\pi$-kuvaus, aivan kuten BFS:ssä (kuvaa solmun edeltäjäänsä lyhimpien polkujen puussa).
-    \item Kun solmu poistetaan avoimesta listasta, sen $g$-arvo on optimaali. $a \circ b$
+    \item Kun solmu poistetaan avoimesta listasta, sen $g$-arvo on optimaali.
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{dijkstra}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi}
+  \begin{itemize}
+    \item Dijkstran algoritmi voidaan mieltää BFS:n yleistykseksi painotetuissa verkoissa: samoin kuten BFS, Dijkstran algoritmi kasvattaa hakuavaruutensa ''kaikkiin suuntiin'' laajenevan pallon tavoin.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{A$\ast$ - haku}
+  \begin{itemize}
+    \item Pseudokoodi tasan sama kuten Dijkstran algoritmilla, paitsi että rivillä 3 $g(x)$ on korvattava $f(x)$:llä, jolle siis $f(x) = g(x) + h(x)$, missä $h(x)$ on optimistinen (eli aliarvioitu) kustannus solmusta $x$ maalisolmuun.
+    
+    \item Intuitio järjestelyn takana on se, että A$\ast$ ''tietää'' mihin suuntaan kannattaa lähteä kasvattamaan hakuavaruuden päästääkseen maalisolmuun nopeammin.
+    
+    \item Määrittämällä $h(u) = 0$ kaikilla $u \in V$, A$\ast$ palautuu Dijkstran algoritmiksi.
+  \end{itemize}
 \end{frame}
 
 \end{document}

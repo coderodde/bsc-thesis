@@ -59,11 +59,11 @@ $u = \pi(u)$ \\
     \For{$(u, v) \in G.A$}{
       \If{$v \; \KwIs \KwNot \KwMappedIn \pi$}{
         $\pi(v) = u$ \\
-        $\textsc{Enqueue}(Q, u)$ \\
+        $\textsc{Enqueue}(Q, v)$ \\
       }
     }
-    \KwRet $\langle \rangle$ \\
   }
+  \KwRet $\langle \rangle$ \\
 \caption{\textsc{Breadth-First-Search}$(G, s, t)$}
 \end{finalgo}
 
