@@ -29,14 +29,14 @@
 $u = x$ \\
 $p = \langle  \rangle$ \\
 \While{$u \textbf{\emph{ is not nil}}$}{
-lisää $u$ $p$:n alkuun \\
-$u = \pi(u)$
+$p = \langle u \rangle \circ p$ \\
+$u = \pi(u)$ \\
 }
 \nonl Kaksisuuntainen haku? \\
 \If{$\pi_{REV} \textbf{\emph{ is not nil}}$}{
   $u = \pi_{REV}(x)$ \\
   \While{$u \textbf{\emph{ is not nil}}$}{
-    lisää $u$ $p$:n loppuun \\
+    $p = p \circ \langle u \rangle$ \\
     $u = \pi_{REV}(u)$ \\
   }
 }
@@ -109,5 +109,37 @@ $u = \pi(u)$
   \KwRet $\langle \rangle$ \\
 \caption{\textsc{Bidirectional-Breadth-First-Search}$(G, s, t)$}
 \end{finalgo}
+
+\begin{finalgo}
+$\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
+\While{$|\text{OPEN}| > 0$}{
+ $u = \underset{x \in \text{OPEN}}{\argmin}\, g(x)$ \\
+ \If{$u \textbf{\emph{ is }} t$}{
+   \KwRet \textsc{Traceback-Path$(u, \pi, \textbf{nil})$}\\
+ }
+ $\text{OPEN} = \text{OPEN} - \{ u \}$ \\
+ $\text{CLOSED} = \text{CLOSED} \cup \{ u \}$ \\
+ \For{$(u, x) \in G.A$}{
+   \If{$x \in \text{\upshape CLOSED}$}{
+     $\textbf{continue}$ \\
+   }
+   $g' = g(u) + w(u, x)$ \\
+   \If{$x \not \in \text{\upshape OPEN}$}{
+     $\text{OPEN} = \text{OPEN} \cup \{ x \}$ \\
+     $g(x) = g'$ \\
+     $\pi(x) = u$ \\
+   }
+   \ElseIf{$g(x) > g'$}{
+     $g(x) = g'$ \\
+     $\pi(x) = u$ \\
+   }
+ }
+}
+\KwRet $\langle \rangle$ \\
+\caption{\textsc{Dijkstra-Shortest-Path}$(G, s, t, w)$}
+\label{alg:unidijkstra}
+\label{Dijkstra}
+\end{finalgo}
+
 
 \end{document}

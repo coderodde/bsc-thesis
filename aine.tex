@@ -156,25 +156,25 @@ Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka toim
 $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
 \While{$|\text{OPEN}| > 0$}{
  $u = \underset{x \in \text{OPEN}}{\argmin}\, g(x)$ \\
- \If{$x \textbf{\emph{ is }} t$}{
-   \KwRet \textsc{Traceback-Path$(t, \pi, \textbf{nil})$}\\
+ \If{$u \textbf{\emph{ is }} t$}{
+   \KwRet \textsc{Traceback-Path$(u, \pi, \textbf{nil})$}\\
  }
  $\text{OPEN} = \text{OPEN} - \{ u \}$ \\
- $\text{CLOSED} = \text{CLOSED} \cup \{ x \}$ \\
- \nonl Jokaisella solmun $x$ lapsisolmulla $u$, tee... \\
- \For{$(x, u) \in G.A$}{
-   \If{$u \in \text{\upshape CLOSED}$}{
+ $\text{CLOSED} = \text{CLOSED} \cup \{ u \}$ \\
+ \nonl Jokaisella solmun $u$ lapsisolmulla $x$, tee... \\
+ \For{$(u, x) \in G.A$}{
+   \If{$x \in \text{\upshape CLOSED}$}{
      $\textbf{continue}$ \\
    }
-   $g' = g(x) + w(x, u)$ \\
-   \If{$u \not \in \text{\upshape OPEN}$}{
-     $\text{OPEN} = \text{OPEN} \cup \{ u \}$ \\
-     $g(u) = g'$ \\
-     $\pi(u) = x$ \\
+   $g' = g(u) + w(u, x)$ \\
+   \If{$x \not \in \text{\upshape OPEN}$}{
+     $\text{OPEN} = \text{OPEN} \cup \{ x \}$ \\
+     $g(x) = g'$ \\
+     $\pi(x) = u$ \\
    }
-   \ElseIf{$g(u) > g'$}{
-     $g(u) = g'$ \\
-     $\pi(u) = x$ \\
+   \ElseIf{$g(x) > g'$}{
+     $g(x) = g'$ \\
+     $\pi(x) = u$ \\
    }
  }
 }
@@ -189,14 +189,16 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
 $u = x$ \\
 $p = \langle  \rangle$ \\
 \While{$u \textbf{\emph{ is not nil}}$}{
-lisää $u$ $p$:n alkuun \\
+$p = \langle u \rangle \circ p$ \\
+%lisää $u$ $p$:n alkuun \\
 $u = \pi(u)$
 }
 \nonl Kaksisuuntainen haku? \\
 \If{$\pi_{REV} \textbf{\emph{ is not nil}}$}{
   $u = \pi_{REV}(x)$ \\
   \While{$u \textbf{\emph{ is not nil}}$}{
-    lisää $u$ $p$:n loppuun \\
+    $p = p \circ \langle u \rangle$ \\
+%    lisää $u$ $p$:n loppuun \\
     $u = \pi_{REV}(u)$ \\
   }
 }
