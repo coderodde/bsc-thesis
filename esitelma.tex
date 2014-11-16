@@ -224,7 +224,7 @@ Tarvitaan vain kuvaus $\pi$ (ja myös $\pi_{REV}$ mikäli polku oli haettu kaksi
 
 \begin{frame}
   \frametitle{Dijkstran algoritmi kaarivivuilla}
-  Jokaiselle kaarelle asetetaan $k$:n bitin bittivektorin; jos $i$des bitti on päällä, kaari on lyhimmällä polulla johonkin osion $V_i$ solmuun.
+  Jokaiselle kaarelle asetetaan $k$:n bitin bittivektorin (engl. \textit{arc-flag vector}, kaarivipuvektori); jos $i$des bitti on päällä, kaari on lyhimmällä polulla johonkin osion $V_i$ solmuun.
 \end{frame}
 
 \begin{frame}
@@ -237,6 +237,26 @@ Tarvitaan vain kuvaus $\pi$ (ja myös $\pi_{REV}$ mikäli polku oli haettu kaksi
 \begin{frame}
   \frametitle{Dijkstran algoritmi kaarivivuilla}
   Jokaisen osion $V_i$ jokaisen rajasolmun $u \in B_i$ lähtien ajetaan ''takaperin'' tavallinen Dijkstra ja tuloksena syntyvässä lyhimpien polkujen puussa $T$ asetetaan jokaisen kaaren $(u, v) \in T$ $i$des vipu päälle.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+  Nyt tuloksena syntyvässä algoritmissa haettaessa polkua solmuun $t \in V$, voidaan karsia kaikki kaaret, joiden $r(t)$:s bitti ei ole päällä.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+  Voidaan myös kaksisuuntaista: jokaisella kaarella kaksi kaarivipuvektoria: yksi normaalia hakusuuntaa varten ja toinen käännettyä hakua varten.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+  Tekniikka voidaan nähdä tasapainoilevan tavallisen Dijkstran algoritmin ($k = 1, V_1 = V$) ja kaikkien parien algoritmin ($k = n$, jokainen solmu on osio) välillä.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+  Tutkijat raportoivat kaksisuuntaisen kaarivipu-Dijkstran olevan keskimäärin yli 500 kertaa nopeampi kuin tavallinen yksisuuntainen Dijkstra.
 \end{frame}
 
 \end{document}
