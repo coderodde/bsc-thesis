@@ -59,6 +59,8 @@
 
     \item Painotettujen verkkojen kohdalla otaksumme kunkin kaaren $(u, v)$ painon $w(u, v)$ olevan \textbf{ei-negatiivinen}.
     
+	\item Polun $\gamma$ paino on $\sum_{i = 0}^{k - 1} w(u_i, u_{i + 1})$.
+    
     \item Suuntamattomassa verkossa solmun $u$ ''aste'' on $d(u) = |\{ \{u, v\} \colon \{ u, v \} \in E \}|$. 
     
     \item Suunnatussa verkossa solmun $u$ ''sisäänaste'' (engl. \textit{indegree}) on $\textrm{deg}^-(u) = | \{ (v, u) \colon (v, u) \in A \} |$ ja
@@ -73,7 +75,7 @@
 \begin{itemize}
 \item Löytää lyhimmän polun (yhden monesta mahdollisesta) painottamattomassa verkossa.
 \item Toteutus vaatii vain jonon ja hajautustaulun.
-\item Toimii ajassa $\mathcal{O}(n + m) \approx \sum_{i = 0}^N d_i$, missä $N$ on lyhimmän polun solmujen määrä ja $d$ keskiarvoinen solmun aste tai solmun ulosaste verkon tyypistä riippuen.
+\item Toimii ajassa $\mathcal{O}(n + m) \approx \sum_{i = 0}^N d^i$, missä $N$ on lyhimmän polun solmujen määrä ja $d$ keskiarvoinen solmun aste tai solmun ulosaste verkon tyypistä riippuen.
 \end{itemize}
 \end{frame}
 %%% END: BFS
@@ -172,17 +174,28 @@ Tarvitaan vain kuvaus $\pi$ (ja myös $\pi_{REV}$ mikäli polku oli haettu kaksi
 
 \begin{frame}
   \frametitle{Kaksisuuntainen Dijkstran algoritmi}
-  \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{expand}
+  \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{expand}
 \end{frame}
 
 \begin{frame}
   \frametitle{Kaksisuuntainen Dijkstran algoritmi}
-  \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{bidijkstra}
+  \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{bidijkstra}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaksisuuntainen Dijkstran algoritmi}
+  \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{term}
 \end{frame}
 
 \begin{frame}
   \frametitle{Kaksisuuntainen A$\ast$}
-  Tasan sama kuin kaksisuuntainen Dijkstra, paitsi että operaation \textsc{Expand} rivillä 1 oleva $g(x)$ korvattava lausekkeella $f(x)$, jolle siis $f(x) = g(x) + h(x)$.
+  \begin{itemize}
+    \item Tasan sama kuin kaksisuuntainen Dijkstra, paitsi että operaation \textsc{Expand} rivillä 1 oleva $g(x)$ korvattava lausekkeella $f(x)$, jolle siis $f(x) = g(x) + h(x)$.
+    \item Operaatiossa \textsc{Terminate} testin ehto on
+    \[
+    \max( \underset{x \in \textsc{OPEN}}{\min} f(x), \underset{x \in \textsc{OPEN}_{REV}}{\min}f_{REV}(x) ) \geq \mu,    
+    \]
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -230,7 +243,7 @@ Tarvitaan vain kuvaus $\pi$ (ja myös $\pi_{REV}$ mikäli polku oli haettu kaksi
 \begin{frame}
   \frametitle{Dijkstran algoritmi kaarivivuilla}
   Osion $V_i$ ''rajasolmut'' ovat \[
-    B_i = \{ u \in V_i \colon \exists (u, v) \in A \text{ siten että } r(v) \neq r(u) \}.
+    B_i = \{ v \in V_i \colon \exists (u, v) \in A \text{ siten että } r(v) \neq r(u) \}.
   \]
 \end{frame}
 
@@ -257,6 +270,34 @@ Tarvitaan vain kuvaus $\pi$ (ja myös $\pi_{REV}$ mikäli polku oli haettu kaksi
 \begin{frame}
   \frametitle{Dijkstran algoritmi kaarivivuilla}
   Tutkijat raportoivat kaksisuuntaisen kaarivipu-Dijkstran olevan keskimäärin yli 500 kertaa nopeampi kuin tavallinen yksisuuntainen Dijkstra.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dynaamiset verkot}
+  \begin{itemize}
+    \item Aiemmin tarkastellut verkot ovat \textbf{staattisia}.
+    \item Dynaamisessa verkossa lyhin polku ei riipu vain lähtö- ja maalisolmuista, vaan myös siitä ajasta, jona matka aloitetaan.
+    \item Lisäksi, kaarten painot riippuvat siitä, millä ajoneuvoilla ollaan liikkeellä (bussi, raitiovaunu, metro, kävely).
+    \item Myös solmuihin liittyy painoja (''Pekka saappui pysäkille, jossa hän odottaa bussin neljä minuuttia.'')
+    \item Reittiopas toimii dynaamisilla verkoilla.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dynaamiset verkot}
+  \begin{itemize}
+      \item Jos käyttäjä syöttää lähtöajan, haku on ''normaalia'' lähtösolmusta maalisolmuun.
+      \item Jos käyttäjä syöttää saapumisajan, haku on ''käännetty takaperin'' ja etenee ''ajassa taaksepäin'' kunnes kohtaa lähtösolmun.
+      \item Kaksisuuntainen haku ei ole dynaamisilla verkoilla mahdollista, sillä se vaatii maalisolmun saapumisajankohdan, jonka voi laskea vain ajamalla yksisuuntaisen haun lähtösolmusta.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  Kiitos!
+\end{frame}
+
+\begin{frame}
+  Kysymyksiä?
 \end{frame}
 
 \end{document}
