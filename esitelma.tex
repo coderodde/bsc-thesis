@@ -97,7 +97,7 @@ Voi!
 \begin{frame}
 \frametitle{Kaksisuuntainen leveyssuuntainen haku}
 \begin{itemize}
-  \item Ajaa kaksi hakuavaruutta: yksi normaalin tapaan lähtösolmusta, ja toinen ''takaperin'' maalisolmusta.
+  \item Aja kaksi hakuavaruutta: yksi normaalin tapaan lähtösolmusta, ja toinen ''takaperin'' maalisolmusta.
   \item Kun kaksi yllä mainittua hakuavaruutta kohtavat jossain ''keskellä'', rakennetaan lyhin polku.
   \item Aikavaativuus on $2\sum_{i = 0}^{\lceil N / 2\rceil} d^i$.
   \item Verkosta riippuen voi olla jopa \textasciitilde 1000 kertaa nopeampi kuin yksisuuntainen BFS.
@@ -128,7 +128,7 @@ Tarvitaan vain kuvaus $\pi$ (ja myös $\pi_{REV}$ mikäli polku oli haettu kaksi
     \item Vuonna 1959 Edsger W. Dijkstra esitti kuuluisan polunhakualgoritminsa, joka toimii polynomisessa ajassa.
     \item FIFO jonon sijasta prioriteettijono; kutsutaan usein ''avoimeksi'' listaksi (engl. \textit{open set}).
     \item Hajautustauluun perustuva joukkorakenne; kutsutaan usein ''suljetuksi' listaksi (engl. \textit{closed set}).
-    \item $g$-kuvaus, joka kuvaa kunkin saavutetun solmun toistaiseksi pienempään etäisyyteen lähtösolmusta laskettuna.
+    \item $g$-kuvaus, joka kuvaa kunkin saavutetun solmun toistaiseksi pienimpään etäisyyteen lähtösolmusta laskettuna.
     \item $\pi$-kuvaus, aivan kuten BFS:ssä (kuvaa solmun edeltäjäänsä lyhimpien polkujen puussa).
     \item Kun solmu poistetaan avoimesta listasta, sen $g$-arvo on optimaali.
   \end{itemize}
@@ -154,6 +154,89 @@ Tarvitaan vain kuvaus $\pi$ (ja myös $\pi_{REV}$ mikäli polku oli haettu kaksi
     
     \item Määrittämällä $h(u) = 0$ kaikilla $u \in V$, A$\ast$ palautuu Dijkstran algoritmiksi.
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaksisuuntainen painotettu haku}
+  \begin{itemize}
+    \item Myös A$\ast$ ja Dijkstran algoritmit voidaan kaksisuuntaista.
+    \item Jos heuristiikkafunktio ei voida määritellä, kaksisuuntainen Dijkstran algoritmi on melkein aina parempit vaihtoehto suhteessa yksisuuntaiseen versioonsa.
+    \item Mitä tulee A$\ast$:n kaksisuuntaistamiseen, algoritmi ei nopeudu erityisen paljon, sillä jo ei niin hyvä heuristiikkafunktio karsii hakuavaruuden melko hyvin.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaksisuuntainen Dijkstran algoritmi}
+  \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{update}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaksisuuntainen Dijkstran algoritmi}
+  \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{expand}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaksisuuntainen Dijkstran algoritmi}
+  \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{bidijkstra}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaksisuuntainen A$\ast$}
+  Tasan sama kuin kaksisuuntainen Dijkstra, paitsi että operaation \textsc{Expand} rivillä 1 oleva $g(x)$ korvattava lausekkeella $f(x)$, jolle siis $f(x) = g(x) + h(x)$.
+\end{frame}
+
+\begin{frame}
+  Mikä mahtaa olla tehokkain tapaa hakea polut?
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaikkien parien lyhimmät polut}
+  (1) Aja kaikkien-parit algoritmin, joka palauttaa nk. ''edeltäjämatriisin''.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaikkien parien lyhimmät polut}
+  (2) Mikä tahansa $N$:n solmun polku voidaan rakentaa edellä mainitusta matriisista ajassa $\mathcal{O}(N)$!
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kaikkien parien lyhimmät polut}
+  \begin{itemize}
+    \item Floyd-Warshall toimii ajassa $\Theta(n^3)$.
+    \item Jos $m = o(n^2)$, Johnsonin algoritmi Fibonacci-keolla on asymptoottisesti parempi: $\mathcal{O}(n^2 \log n + nm)$.
+    \item Kumpikaan ei siis tarpeeksi tehokas prosessoimaan kokonaisen valtion tieverkkoa, sillä pelkästään solmuja on helposti yli 100000.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+    Jaa kaikki solmut $V$ osituksiin $V_1, \dots, V_k$ siten, että
+    \[
+      \bigcup_{i = 1}^k V_i = V,
+    \]
+    ja $V_i \cap V_j = \emptyset$ kaikilla $i \neq j$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+  $k$ osion ositus voidaan merkitä funktiolla $r \colon V \to \{ 1, 2, \dots, k\}$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+  Jokaiselle kaarelle asetetaan $k$:n bitin bittivektorin; jos $i$des bitti on päällä, kaari on lyhimmällä polulla johonkin osion $V_i$ solmuun.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+  Osion $V_i$ ''rajasolmut'' ovat \[
+    B_i = \{ u \in V_i \colon \exists (u, v) \in A \text{ siten että } r(v) \neq r(u) \}.
+  \]
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dijkstran algoritmi kaarivivuilla}
+  Jokaisen osion $V_i$ jokaisen rajasolmun $u \in B_i$ lähtien ajetaan ''takaperin'' tavallinen Dijkstra ja tuloksena syntyvässä lyhimpien polkujen puussa $T$ asetetaan jokaisen kaaren $(u, v) \in T$ $i$des vipu päälle.
 \end{frame}
 
 \end{document}
