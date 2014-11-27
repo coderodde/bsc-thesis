@@ -150,16 +150,60 @@ Verkko $G$ on pari $(V, A)$, jossa $V$ on solmujen joukko ja $A \subset V \times
 %
 % instead.
 \section{Tavallisimmat algoritmit}
-Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka toimii polynomisessa ajassa \cite{Dijkstra59}. Algoritmin voidaan katsoa yhdistävän ahneuden (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan A$^{\ast}$-algoritminsa \cite{Hart68},  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta. Erona on kuitenkin se, että A$^{\ast}$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvoa, joka on $f(u) = g(u) + h(u)$, missä $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että A$^{\ast}$ ''tietää'' mihin suuntaan haku on suunnattava, jota päästäisiin maalisolmuun, ainakin paremmin kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ''kaikkiin suuntiin''.
+Keskustellessa polunhakualgoritmeista paras etenemissuunta lienee yleisimmistä tekniikoista ad-hoc ratkaisuihin. Optimaalin polun haku on intuitiivisinta painottomissa verkoissa, joissa niinkin helppo algoritmi kuten leveyssuuntainen haku (\ref{alg:bfs}) on riittävä. Algoritmi käyttää kaksi tietorakennetta: saavutettujen solmujen FIFO-jonon (engl. \textit{first-in, first-out}) ja hajautustaulun $\pi \colon V \to V$, joka assosioi jokaisen saavutetun solmun $u$ kanssa se solmu $v$, josta haku on edennyt $u$:hun. Intuitio tämän takana on se, että leveyssuuntainen haun hakuavaruus etenee ''verkon taso'' kerralla lähtien lähtösolmusta $s$, kunnes saavuttaa maalisolmun $t$, minkä jälkeen löydetty lyhin polku $\langle s = \pi(\pi(\dots)), \pi(\pi(t)), \pi(t), t \rangle$ voidaan rakentaa rutiinilla \ref{alg:tracepath}.
+\begin{finalgo}[p]
+$u = x$ \\
+$p = \langle  \rangle$ \\
+\While{$u \textbf{\emph{ is not nil}}$}{
+$p = \langle u \rangle \circ p$ \\
+$u = \pi(u)$ \\
+}
+\nonl Kaksisuuntainen haku? \\
+\If{$\pi_{REV} \textbf{\emph{ is not nil}}$}{
+  $u = \pi_{REV}(x)$ \\
+  \While{$u \textbf{\emph{ is not nil}}$}{
+    $p = p \circ \langle u \rangle$ \\
+    $u = \pi_{REV}(u)$ \\
+  }
+}
+\KwRet $p$ \\
+\caption{\textsc{Traceback-Path}$(x, \pi, \pi_{REV})$}
+\label{alg:tracepath}
+\end{finalgo}
+
+\begin{finalgo}[p]
+  \SetKw{KwNil}{nil}
+  \SetKw{KwIs}{is }
+  \SetKw{KwNot}{not }
+  \SetKw{KwMappedIn}{yet mapped in }
+  $Q = \langle s \rangle$ \\
+  $\pi(s) = \KwNil$ \\
+  \While{$|Q| > 0$}{
+    $u = \textsc{Dequeue}(Q)$ \\
+    \If{$u $ \KwIs $t$}{
+      \KwRet \textsc{Traceback-Path}$(u, \pi, \KwNil)$ \\
+    }
+    \For{$(u, v) \in G.A$}{
+      \If{$v \; \KwIs \KwNot \KwMappedIn \pi$}{
+        $\pi(v) = u$ \\
+        $\textsc{Enqueue}(Q, v)$ \\
+      }
+    }
+  }
+  \KwRet $\langle \rangle$ \\
+\caption{\textsc{Breadth-First-Search}$(G, s, t)$}
+\label{alg:bfs}
+\end{finalgo}
+
+Mitä tulee painotettuihin verkkoihin Edsger W. Dijkstra esitti vuonna 1959 kuuluisan polunhakualgoritminsa, joka toimii polynomisessa ajassa \cite{Dijkstra59}. Algoritmin voidaan katsoa yhdistävän ahneuden (engl. \textit{greedy algorithm}), dynaamisen ohjelmoinnin ja inkrementaalisen lähestymistavan. Saatuaan lähtösolmun $s$, algoritmi laskee lyhimpien polkujen puun lähtien solmusta $s$ kunnes $t$ joutuu \textit{avoimeen listaan} (engl. \textit{open list; search frontier}), ja sitä kautta \textit{suljettuun listaan} (engl. \textit{closed list; settled node list}), jolloin lyhin $s, t$-polku on löytynyt. Hart et al. esittivät vuonna 1968 kuuluisan A$^{\ast}$-algoritminsa \cite{Hart68},  joka -- samoin kuten Djikstran algoritmi -- ylläpitää mm. kunkin saavutetun solmun $u$ $g$-arvon $g(u)$, joka on toistaiseksi pienin kustannus lähtösolmusta $s$ solmuun $u$, ja joka on taattu olemaan pienin mahdollinen heti kun $u$ poistuu avoimesta listasta. Erona on kuitenkin se, että A$^{\ast}$ käyttää kunkin solmun $u$ prioriteettinä sen $f$-arvoa, joka on $f(u) = g(u) + h(u)$, missä $h(u)$ on solmun $u$ optimistinen (eli aliarvioitu) etäisyys maalisolmuun. Intuitio tämän järjestelyn takana on se, että A$^{\ast}$ ''tietää'' mihin suuntaan haku on suunnattava, jota päästäisiin maalisolmuun, ainakin paremmin kuin Dijkstran algoritmi, jonka hakuavaruus kasvaa laajenevan pallon tavoin ''kaikkiin suuntiin''.
 \begin{finalgo}
 \nonl Monikkosijoitus \\
 $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s, \textbf{nil}) \})$ \\
 \While{$|\text{OPEN}| > 0$}{
- $u = \underset{x \in \text{OPEN}}{\argmin}\, g(x)$ \\
+ $u = \textsc{Extract-Minimum}(\text{OPEN})$ \\
  \If{$u \textbf{\emph{ is }} t$}{
    \KwRet \textsc{Traceback-Path$(u, \pi, \textbf{nil})$}\\
  }
- $\text{OPEN} = \text{OPEN} - \{ u \}$ \\
  $\text{CLOSED} = \text{CLOSED} \cup \{ u \}$ \\
  \nonl Jokaisella solmun $u$ lapsisolmulla $x$, tee... \\
  \For{$(u, x) \in G.A$}{
@@ -168,11 +212,12 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
    }
    $g' = g(u) + w(u, x)$ \\
    \If{$x \not \in \text{\upshape OPEN}$}{
-     $\text{OPEN} = \text{OPEN} \cup \{ x \}$ \\
+     $\textsc{Insert}(\text{OPEN}, x, g')$ \\
      $g(x) = g'$ \\
      $\pi(x) = u$ \\
    }
    \ElseIf{$g(x) > g'$}{
+     $\textsc{Decrease-Key}(\text{OPEN}, x, g')$ \\
      $g(x) = g'$ \\
      $\pi(x) = u$ \\
    }
@@ -185,27 +230,6 @@ $\text{OPEN}, \text{CLOSED}, g, \pi = (\{ s \}, \emptyset, \{  (s, 0) \}, \{ (s,
 \label{Dijkstra}
 \end{finalgo}
 \noindent A$^{\ast}$:n pseudokoodi on tasan sama kuin Dijkstran algoritmin (Algoritmi \ref{alg:unidijkstra}). Erotuksena rivillä 3 $g(x)$:n sijasta on $f(x)$, jolle siis $f(x) = g(x) + h(x)$. Molemmat kutsuvat \textsc{Traceback-Path}-rutiinin, joka muodostaa lyhimmän polun edeltäjäpuusta (engl. \textit{predecessor tree}) ajassa $\Theta(N)$, missä $N$ on lyhimmän polun solmujen määrä. On huomattava, että A$^{\ast}$ palautuu Dijkstran algoritmiin määrittelemällä $h(u) = 0$ jokaisella $u \in V$.
-\begin{finalgo}
-$u = x$ \\
-$p = \langle  \rangle$ \\
-\While{$u \textbf{\emph{ is not nil}}$}{
-$p = \langle u \rangle \circ p$ \\
-%lisää $u$ $p$:n alkuun \\
-$u = \pi(u)$
-}
-\nonl Kaksisuuntainen haku? \\
-\If{$\pi_{REV} \textbf{\emph{ is not nil}}$}{
-  $u = \pi_{REV}(x)$ \\
-  \While{$u \textbf{\emph{ is not nil}}$}{
-    $p = p \circ \langle u \rangle$ \\
-%    lisää $u$ $p$:n loppuun \\
-    $u = \pi_{REV}(u)$ \\
-  }
-}
-\KwRet $p$ \\
-\caption{\textsc{Traceback-Path}$(x, \pi, \pi_{REV})$}
-\label{alg:tracebackpath}
-\end{finalgo}
 
 \section{Kaksisuuntainen haku}
 Vaikka A$^{\ast}$ on tyypillisesti tehokkaampi kuin Dijkstran algoritmi, käyttämällä \textit{kaksisuuntaista} hakua, voidaan päästää verrattavissa olevaan suorituskykyyn. Ajatus kaksisuuntaisuuden takana on se, että algoritmi kasvattaa kaksi hakupuuta: yhden normaaliin tapaan ja toisen maalisolmusta ihan kuin kaaret olisi ''käännetty'' päinvastaiseen suuntaan, kunnes kaksi hakuavaruutta ''kohtaavat'' keskellä. Nyt jos lyhin polku koostuu $N$ kaaresta, ja verkon solmujen keskiarvoinen aste on $d$, tavallinen, eli yksisuuntainen haku vaatii ajan
