@@ -269,6 +269,51 @@ kun kaksisuuntainen vaatii
 \]
 Ylläoleva pätee leveyssuuntaiseen hakuun sellaisenaan, ja painotetun haun kohdalla voidaan saada yläraja kertomalla kunkin summan termin tekijällä $O(\log n)$, joka liittyy algoritmien käyttämään prioritettijonon operaatioihin. 
 
+\subsection{Kaksisuuntainen leveyssuuntainen haku}
+Leveyssuuntainen haku hyötyy kaksisuuntaisuudesta, vaikka toteutus vaatii kuusi erilaista tietorakennetta: kaksi FIFO-jonoa $Q$ ja $Q_{REV}$ (kumpikin on riittävä mallintamaan prioriteettijonoja painottomassa haussa). Lisäksi tarvitaan edeltäjäkuvaukset kumpaakin hakusuuntaa varten: $\pi$ ja $\pi_{REV}$. Etäisyyskuvauksien $d$ ja $d_{REV}$ rooli on analoginen Dijkstran algoritmin $g$-kuvauksen kanssa: $d(u)$ on lyhimmän $s, u$-polun kaarien määrä (ja siten myös kustannus) ja $d_{REV}(u)$ on lyhimmän $u, t$-polun kustannus. Aina kun tietyssä hakusuunnassa poistetaan jonosta solmu $x$, tarkistetaan joko vastakkaisen hakusuunnan kuvauksissa on kuvaus solmulle $x$. Jos asia on niin, on löydetty välisolmu, johon molemmat hakusuunnat ovat edenneet, ja jos edellä mainittu $x$, jonka implikoima polun kustannus on $d(x) + d_{REV}(x)$, parantaa toistaiseksi parhaan tunnetun polun kustannuksen $\mu$, $x$ talletetaan välisolmuksi $m$, josta myöhemmin rutiini \textsc{Traceback-Path} (Algoritmi \ref{alg:tracepath}) pystyy muodostomaan lyhimmän polun. Yksi mahdollinen rajoite kaksisuuntaisen haun käyttöönotolle on se, että jos painottamattomassa verkossa on useampi lyhin polku, kaksisuuntainen versio ei välttämättä löydä samaa polkua kuten tavallinen. Tämä saattaa olla joissakin sovelluksissa ongelmallista mikäli on tarvetta laajentaa kunkin jonosta poistetun solmun seuraajasolmut tietyssä järjestyksessä.
+\begin{finalgo}[p]
+  \SetKw{KwNil}{nil}
+  \SetKw{KwIs}{is }
+  \SetKw{KwNot}{not }
+  \SetKw{KwYetMappedIn}{yet mapped in }
+  \SetKw{KwMappedIn}{mapped in }
+  \SetKw{KwAnd}{and }
+  $Q, \pi, d = (\langle s \rangle, (s, \KwNil), (s, 0))$ \\
+  $Q_{REV}, \pi_{REV}, d_{REV} = (\langle t \rangle, (t, \KwNil), (t, 0))$ \\
+  $m, \mu = (\KwNil, \infty)$ \\
+  \While{$|Q||Q_{REV}| > 0$}{
+    \If{$m$ \KwIs \KwNot \KwNil \KwAnd $d(\textsc{Head}(Q)) + d_{REV}(\textsc{Head}(Q_{REV})) \geq \mu$}{
+        \KwRet \textsc{Traceback-Path}$(m, \pi, \pi_{REV})$ \\
+    }
+    $u = \textsc{Dequeue}(Q)$ \\
+    \If{$u$ \KwIs \KwMappedIn $\pi_{REV}$ \KwAnd $\mu > d(u) + d_{REV}(u)$}{
+        $\mu = d(u) + d_{REV}(u)$\\
+        $m = u$ \\
+    }
+    \For{$(u, v) \in G.A$}{
+      \If{$v \; \KwIs \KwNot \KwYetMappedIn \pi$}{
+        $\pi(v) = u$ \\
+        $\textsc{Enqueue}(Q, v)$ \\
+        $d(v) = d(u) + 1$ \\
+      }
+    }
+    $u = \textsc{Dequeue}(Q_{REV})$ \\
+    \If{$u$ \KwIs \KwMappedIn $\pi$ \KwAnd $\mu > d(u) + d_{REV}(u)$}{
+        $\mu = d(u) + d_{REV}(u)$\\
+        $m = u$ \\
+    }
+    \For{$(v, u) \in G.A$}{
+      \If{$v \; \KwIs \KwNot \KwYetMappedIn \pi_{REV}$}{
+        $\pi_{REV}(v) = u$ \\
+        $\textsc{Enqueue}(Q_{REV}, v)$ \\
+        $d_{REV}(v) = d_{REV}(u) + 1$ \\
+      }
+    }
+  }
+  \KwRet $\langle \rangle$ \\
+\caption{\textsc{Bidirectional-Breadth-First-Search}$(G, s, t)$}
+\end{finalgo}
+
 \subsection{Kaksisuuntainen Dijkstran algoritmi}
 Ylläolevan analyysin nojalla, on selvä, että Dijkstran algoritmi hyötyy kaksisuuntaisuudesta, eikä edellytä minkäänlaista verkon esiprosessointia. Lisäksi, algoritmin vahvuutena suhteessa A$^{\ast}$:iin ei ole pelkästään verrattavissa oleva tehokkuus, vaan myös heuristiikkafunktion tarpeettomuus. $\mu$ on toistaiseksi lyhimmän polun kustannus, joka suorituksen alussa on $\infty$. Kun algoritmi löytää toistaiseksi lyhimmän polun hakuavaruuksien kohdatessa, ''välisolmu'' $m$ ja sen implikoima kustannus $\mu$ päivitetään. Haku jatkuu siihen asti, kunnes molempien avointen listojen minimialkioiden kustannusten summa on vähintään $\mu$. 
 
@@ -429,21 +474,20 @@ Lisäksi, järjestelmä liittää jokaiseen verkon kaareen ''kaarivipuvektorin''
 Koska kaksisuuntainen haku on mahdollista myös kaarivipujärjestelmässä, asia vaatii vain sen, että kuhunkin kaaren liitetään kaksi vipuvektoria, yksi kutakin hakusuuntaa varten. Tällaisella algoritmilla Möhring et al. raportoivat nopeutuksen suhteessa tavalliseen Dijkstran algoritmiin olleen yli 500 noin yhden miljoonan solmun ja $2.5 \times 10^6$ kaaren verkolla.
  
 \section{Polunhaku ja Multiple Sequence Alignment \\-ongelma}
-Multiple sequence alignment -ongelmassa on annettu $\kappa$ sekvenssiä yli aakkoston $\Sigma$, kustannusmatriisi $c \colon \Sigma^2 \to \mathbb{Z}$ ja ''välisakko'' (engl. \textit{gap penalty}), joka liittyy merkkiin -. Aakkostona on tyypillisesti 20 aminohappoa, ja tarkoituksena on laittaa eri sekvensseissa välimerkit ''-'' siten, että jokainen (mahdollisesti) pidennetty sekvenssi sisältää saman määrän merkkejä, ja koko ''linjaus'' (engl. \textit{alignment}) omaa optimaalin kustannuksen. Jos $M$ on $\kappa \times L$-matriisi, jossa kukin rivi on tietty sekvenssi välimerkkeineen, kunkin sarakkeen $s$ kustannus määritellään olevan 
-\[
-\mathfrak{C}(s) = \sum_{1 \leq i < j \leq \kappa} c(M_{i, s}, M_{j, s}),
-\]
-ja koko linjauksen kustannus on
-\[
-\sum_{i = 1}^L \mathfrak{C}(i).
-\]
-Lisäksi, määritellään $c(-,-) = 0$, ja aina kun jompikumpi merkki $a \in \Sigma$ ja toinen on väli -, käytetään merkkiparin kustannuksena em. välisakko. (Näin siis optimaalissa linjauksessa ei ole sarakkeita, joiden jokainen merkki on -.)
+Multiple sequence alignment -ongelmassa on annettu $\kappa$ sekvenssiä yli aakkoston $\Sigma$ (useimmiten 20 aminohappoa), kustannusfunktio $c \colon \Sigma^2 \to \mathbb{Z}$ ja ''välisakko'' (engl. \textit{gap penalty}), joka liittyy merkkiin -. Useimmiten tarkoitus on arvioida eri organismien samasta ilmiöstä vastaavien geenien evolutiivinen yhteys.  Ongelma on mahdollista muotoilla polunhakuongelmana siten, että kukin sekvenssi laitetaan $\kappa$-ulotteisen ''hilan'' (engl. \textit{lattice}) akseleiksi ja kukin solmu $x$ voidaan ajatella olevan vektori $(x_1, \dots, x_\kappa)$, missä $x_i$ on $i$nnesta sekvenssista luettujen merkkien määrä. Kun solmusta $x$ siirrytään solmuun $y = (y_1, \dots, y_\kappa)$, jokaisella $i = 1, \dots, \kappa$ $y_i = x_i + 1$ tai $y_i = x_i$, jolloin maksimaalinen solmusta lähtevien kaarien määrä on tasan $2^\kappa - 1$. Jos kahden vierekkäisen solmun koordinaateista jotkut eivät eroa, niittä vastaavista sekvensseistä ei ''lueta'' merkkiä, vaan laitetaan sen sijaan välimerkki -. Optimaali rivitys näin olleen löytyy hakemalla lyhin polku solmusta $(0, \dots, 0)$ solmuun $(|S_1|, \dots, |S_\kappa|)$.
 
-\subsection{Ongelman muotoileminen verkkona}
-Kun on annettu sekvenssit $S_1, \dots, S_{\kappa}$, kukin niistä asetetaan $\kappa$-ulotteisen ''hilan'' (engl. \textit{lattice}) akseleiksi. Kukin solmu voidaan ajattella omistavan koordinaatit $(x_1, \dots, x_{\kappa})$, ja kun siitä siirrytään seuraavaan solmuun $(y_1, \dots, y_{\kappa})$, kukin $y_i$ on joko $x_i$ tai $x_i + 1$, jolloin niiden koordinaattien $y_i$ kohdalla, jotka eroavat koordinaatista $x_i$, luetaan $i$:nnen sekvenssin $y_i$:des merkki, ja muiden kohdalla ei lueta mitään, vaan laitetaan samaan sarakkeeseen välimerkki -. Selvästi, jokaisella hilan ''sisäsolmulla'' on tasan $2^{\kappa} - 1$ lapsisolmua, ja vaikka hilaverkko on syklitön, jo muutaman sekvenssin hilaa ei voida säilyttää muistissa eksplisiittisesti, vaan solmut joudutaan generoimaan vanhempainsolmuja laajennettaessa (sekvenssien pituus on sadan merkin suuruusluokkaa). Nyt ongelma palautuu reitinhakuongelmaksi, jossa on löydettävä lyhin polku hilan solmusta $(0, \dots, 0)$ solmuun $(|S_1|, \dots, |S_{\kappa}|)$.
-
+Mitä tulee ratkaisuun, algoritmi palauttaa $\kappa$ samanpituuista merkkijonoa yli aakkoston $\Sigma \cup \{ - \}$, joista $i$des merkkijono vastaa $i$dennettä sekvenssiä, johon mahdollisesti on laitettu eri kohdissa välimerkit, jolloin kunkin merkkijonon pituus on $L \geq \max(|S_1|, \dots, |S_\kappa|)$. Ajatus välimerkkien takana on se, että se mahdollistaa sekvenssien osien siirtäämisen eteenpäin kohtiin, joissa kustannus pienenee. Tarkemmin ilmaistuna koko rivityksen (tulosmerkkijonojen) kustannus on
+\[
+\sum_{i = 1}^L \mathfrak{C}(i),
+\]
+missä 
+\[
+\mathfrak{C}(s) = \sum_{1 \leq i < j \leq \kappa} c(M_{i, s}, M_{j, s}).
+\]
+Siis rivityksen kustannus on sen sarakkeiden kustannuksien summa ja kunkin sarakkeen kustannus on sen kaikkien merkkiparien kustannuksien summa. Jos jonkin merkkiparin merkeistä vain yksi on välimerkki, käytetään sen kustannuksena edellä mainittu välisakko; muuten merkkiparin kustannus on annettu kuvauksessa $c$, ja jos kumpikin merkki on väli, kustannus on $c(-,-) = 0$.
+ 
 \subsection{Ratkaisu}
-Yoshizumi et al. raportoivat A$^{\ast}$:n pystyvän käsittelemään enintään seitsemmän sekvenssia, sillä sen avoimet ja suljetut listat kasvavat liian isoiksi. He ehdottavat PEA$^{\ast}$ nimistä algoritmia (engl. \textit{Partial Expansion A}$^\ast$), jonka voidaan ajatella uhraavan hieman aikaa pitääkseen listat pienempinä, jolloin algoritmi pystyy käsittelemään 8 sekvenssia \cite{Yoshizumi00}. Algoritmi lajittelee avoimen listan solmut ei $f$-, vaan $F$-arvojen perusteella, missä $F(u)$ on solmun $u$ ''ei-lupaavien'' solmujen pienin $f$-arvo. Myös on annettu ei-negaativinen katkaisuarvo $C$; (engl. \textit{cutoff value}). Lapsisolmu pidetään ''lupaavana'', jos sen $f$-arvo ei ole suurempi kuin vanhempainsolmunsa $F$-arvon ja $C$:n summa. Alunperin kunkin solmun $F$-arvo on sen $f$-arvo. Lisäksi, jos solmulla $u$ on ei-lupaavat lapsisolmut, $u$ laitetaan takaisin avoimeen listaan. 
+Vaikka MSA-ongelmaa määrittävä hilaverkko on syklitön, se koettelee myös kehittyneiden polunhakualgoritmien rajoja, sillä jo muutamalla sekvenssilla verkko on liian iso, jotta sen voisi säilyttää tietokoneen muistissa eksplisiittisesti, jolloin jäljelle jää solmujen generointi laajennusoperaattorin yhteydessä. Toinen -- myös muistiin liittyvä -- rajoite on se, että algoritmien tietorakenteet paisuvat niin suuriksi, että keskusmuisti loppuu kesken: Yoshizumi et al. raportoivat A$^{\ast}$:n pystyvän käsittelemään enintään seitsemmän sekvenssia, sillä sen avoimet ja suljetut listat kasvavat liian isoiksi. He ehdottavat PEA$^{\ast}$ nimistä algoritmia (engl. \textit{Partial Expansion A}$^\ast$), jonka voidaan ajatella uhraavan hieman aikaa pitääkseen listat pienempinä, jolloin algoritmi pystyy käsittelemään 8 sekvenssia \cite{Yoshizumi00}. Algoritmi lajittelee avoimen listan solmut ei $f$-, vaan $F$-arvojen perusteella, missä $F(u)$ on solmun $u$ ''ei-lupaavien'' solmujen pienin $f$-arvo. Myös on annettu ei-negaativinen katkaisuarvo $C$; (engl. \textit{cutoff value}). Lapsisolmu pidetään ''lupaavana'', jos sen $f$-arvo ei ole suurempi kuin vanhempainsolmunsa $F$-arvon ja $C$:n summa. Alunperin kunkin solmun $F$-arvo on sen $f$-arvo. Lisäksi, jos solmulla $u$ on ei-lupaavat lapsisolmut, $u$ laitetaan takaisin avoimeen listaan. 
 
 Kaikki kaikkiaan, $C$:n arvolla 50, PEA$^{\ast}$, vähentää muistintarpeen 87\%, vaikka käyttää vain 20\% enemmän aikaa kuin A$^{\ast}$ hilassa, jossa solmun ja sen lapsen $f$-arvot eroavat enintään 396 yksikköä. Lisäksi, PEA$^{\ast}$:n suhde A$^{\ast}$:iin on se, että edellinen palautuu jälkimmäiseksi, kun $C = \infty$.
 
