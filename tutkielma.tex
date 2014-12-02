@@ -90,7 +90,7 @@
 \title{Polunhakualgoritmit ja -järjestelmät}
 \author{Rodion Efremov}
 \date{\today}
-\level{Kandidaatintutkielma-aine}
+\level{Kandidaatintutkielma}
 \abstract{Haettaessa lyhimpiä polkuja verkossa joudutaan väistämättä ottamaan kohdeverkon ominaisuuksia huomioon, mikäli halutaan suoriutua tehtävästä pienimmässä mahdollisessa ajassa. Toisinaan on mahdollista määritellä heuristiikkafunktio, ja siten käyttää A$^\ast$-perheen algoritmeja; toisinaan tätä ei voida tehdä, ei ainakaan tehokkaasti, jolloin jäljelle jää kaksisuuntaisuus ja/tai verkon esiprosessointi haun nopeuttamiseksi. Tämän dokumentin tarkoituksena on siis antaa (hyvin suppea) katsaus asiaan liittyviin algoritmeihin ja järjestelmiin.}
 
 \keywords{verkot, lyhimmät polut}
@@ -464,9 +464,10 @@ L^2_{\min} & \leq \underset{x \in \text{OPEN}_{REV}}{\min} (g_{REV}(x) + l_{REV}
 missä $L_{\min}^1$ on lyhimmän $s, p$ -polun kustannus normaalin haun puussa, ja $L_{\min}^2$ analogisesti lyhimmän $p, t$ -polun kustannus vastakkainsuuntaisessa haussa. Kun algoritmin toiminta päättyy, lyhimmän polun kustannus on $L^1_{\min} + L^2_{\min}$. Whangbo raportoi tavallisen A$^{\ast}$:n vievän yhteensä 372 aikayksikköä laskettuna yhteen yli joukon hakuja. Samalla datalla BHPA vie 509 aikayksikköä, ja Whangbon variantti 209 aikayksikköä (huomaa BHPA:n vievän enemmän aikaa kuin tavallinen A$^{\ast}$).
 
 \section{Kaikkien parien lyhimmät polut}
-Toisinaan on annettu $n$ solmua ja halutaan löytää lyhimmät polut kaikkien solmuparien välillä. Yksi tehokkaimmista algoritmeista on Floyd-Warshallin algoritmi, joka käy ajassa $\Theta(n^3)$, eikä sen toiminta riipu kaarien määrästä $m$. Ellei kohdeverkko ole täysi ($m = \mathcal{o}(n^2)$), Johnsonin algoritmi saattaa olla parempi valinta, sillä Fibonacci-keolla edellämainittu käy ajassa $\mathcal{O}(n^2 \log n + nm)$. Ajatus Johnsonin algoritmissa on ensin tarkistaa, ettei verkossa ole sykliä, jonka kokonaispaino on negatiivinen, minkä jälkeen algoritmi ajaa $n$ kertaa Dijkstran algoritmin jokaisesta solmusta, ja jokaisella kerralla hakee kokonaisen lyhimpien polkujen puun. 
+Toisinaan on annettu $n$ solmua ja halutaan löytää lyhimmät polut kaikkien solmuparien välillä. Yksi tehokkaimmista algoritmeista on Floyd-Warshallin algoritmi, joka käy ajassa $\Theta(n^3)$, eikä sen toiminta riipu kaarien määrästä $m$. Ellei kohdeverkko ole täysi ($m = o(n^2)$), Johnsonin algoritmi saattaa olla parempi valinta, sillä Fibonacci-keolla edellämainittu käy ajassa $\mathcal{O}(n^2 \log n + nm)$. 
 
-Vaikka Floyd-Warshall -algoritmin aikavaativuus ei ole koskaan Johnsonin algoritmin aikavaativuutta pienempi, käytännössä Floyd-Warshall saattaa olla tehokkaampi vaihtoehto, sillä sen toteutus on vain kolme sisäkkäistä silmukkaa, joista kukin iteroi $n$ kertaa, ja sisimmän silmukan runkossa tehdään vain yksinkertainen testi, jolloin koko algoritmiin aikavaativuuteen liittyvät vakiokertoimet ovat pieniä.
+\subsection{Floyd-Warshall -algoritmi}
+Vaikka Floyd-Warshall -algoritmin aikavaativuus ei ole koskaan Johnsonin algoritmin aikavaativuutta parempi, käytännössä Floyd-Warshall saattaa olla tehokkaampi vaihtoehto, sillä sen toteutus on vain kolme sisäkkäistä silmukkaa, joista kukin iteroi $n$ kertaa, ja sisimmän silmukan runkossa tehdään vain yksinkertainen testi, jolloin koko algoritmiin aikavaativuuteen liittyvät vakiokertoimet ovat pieniä.
 \begin{finalgo}[h]
   \SetKw{KwNil}{nil}
   $d = \mathbb{R}^{n \times n}$ \\
@@ -496,9 +497,21 @@ Vaikka Floyd-Warshall -algoritmin aikavaativuus ei ole koskaan Johnsonin algorit
 \caption{\textsc{Floyd-Warshall}$(n, w)$}
 \label{alg:warshall}
 \end{finalgo}
-Polunmuodostusrutiini \textsc{Build-Path} eroaa yllä esitetystä rutiinista \textsc{Traceback-Path}.
-Yllä esitetyistä aikavaativuuksista ilmenee, etteivät asianomaiset algoritmit ole tarpeeksi tehokkaita jo $n$:n arvoilla $\geq$ 10000. Jos kuitenkin ongelman koko sallii kaikkien parien algoritmin ajon, algoritmi palauttaa ''edeltäjämatriisin'' (engl. \textit{predecessor matrix}), josta $N$:n solmun lyhin polku voidaan rakentaa ajassa $\Theta(N)$, mitä ei pysty parantamaan tuon enempää, ei ainakaan ilman edistynempää algoritmiikkaa. (Ja vaikka voisikin, polun tulostaminen ja/tai piirtäminen on jo vähintään $\Omega(N)$.)
-\begin{finalgo}[h]
+Polunmuodostusrutiini \textsc{Build-Path} (Algoritmi \ref{alg:buildpath}) eroaa yllä esitetystä rutiinista \textsc{Traceback-Path} (Algoritmi \ref{alg:tracepath}). Yllä on oletettu, että kokonaisluvut $1, 2, \dots, n$ esittävät solmujoukon: voidaan aina johtaa bijektio $\{ 1, 2, \dots, n \} \to V_{domain}$, jolla kuvataan yhden esitystavan solmut toisen esitystavan solmuihin.
+
+Intuitio Floyd-Warshallin algoritmin takana on se, että se tutkii, voidaanko parantaa nykyisen $i, j$-polun kustannus menemällä solmun $k$ kautta, ja jos voi molemmat matriisit päivitetään kuvastamaan sitä tilannetta, ja koska Floyd-Warshall iteroi kaikkien kolmikkoiden $(k, i, j) \in \{ 1, 2, \dots, n \}^3$
+yli, se ratkaisee kaikkien-parien lyhimmät polut optimaalisesti.
+
+\subsection{Johnsonin algoritmi}
+Johnsonin algoritmi lisää syöteverkon solmujoukkoon uuden solmun $s$, kaaret $(s, v)$ kaikilla $v \in V$, ja asettaa kunkin edellä mainitun kaaren painoksi 0. Sen jälkeen algoritmi ajaa Bellman-Ford -algoritmin solmusta $s$ lähtien: jos on löytynyt negatiivisen painon omaava sykli, Johnsonin algoritmin toiminta päätyy. 
+Negatiivisen painon omaava sykli on jono $\langle v_1, v_2, \dots, v_k \rangle$, missä $v_1 = v_k$, muut solmut kuin $v_1 = v_k$ esiintyvät vain kerran ja 
+\[
+\sum_{i = 1}^{k - 1} w(v_i, v_{i +1}) + w(v_k, v_1) < 0.
+\]
+Mikäli verkossa ei ole negatiivisia sykleja, rakennetaan jokaisesta solmusta lähtien kokonaiset lyhimpien polkujen puut ja sen mukaan kun jokainen puu valmistuu, poimitaan siitä asianomaisten polkujen painot ja talletetaan ne kustannus- ja edeltäjämatriiseihin. Koska Dijkstran algoritmi olettaa kunkin kaaren painon ei-negatiiviseksi, jos verkossa on sellaisia, Johnsonin algoritmi joutuu käyttämään toisenlaista painofunktiota $\hat{w}(u, v) = w(u, v) + h(u) - h(v)$ (uudelleenpainotus), missä $h(u) = \delta(s, u)$ ja $s$ on solmu, josta lähtien Bellman-Ford oli ajettu, ja $\delta(s, u)$ on jälkimmäisen laskema lyhin kustannus $s, u$-polulle. 
+
+Yllä esitetyistä aikavaativuuksista ilmenee, etteivät asianomaiset algoritmit ole tarpeeksi tehokkaita ainakin $n$:n arvoilla $\geq$ 10000. Jos kuitenkin ongelman koko sallii kaikkien parien algoritmin ajon, algoritmi palauttaa ''edeltäjämatriisin'' (engl. \textit{predecessor matrix}), josta $N$:n solmun lyhin polku voidaan rakentaa ajassa $\Theta(N)$, mitä ei pysty parantamaan tuon enempää, ei ainakaan ilman edistynempää algoritmiikkaa. (Ja vaikka voisikin, polun tulostaminen ja/tai piirtäminen on jo vähintään $\Omega(N)$.)
+\begin{finalgo}[t]
 \SetKw{KwNil}{nil}
 \If{$\pi(i, j) = $ \KwNil}{
   \KwRet $\langle \rangle$ \\
@@ -602,6 +615,8 @@ On huomattava, että rinnakkaistaessa algoritmeja, ei ole mahdollista saada miel
 \frac{1}{(1 - P) + \frac{P}{N}},
 \]
 missä $N$ on suorittimien määrä ja $P \in (0, 1]$ on sen laskennan suhteellinen osuus, jota voidaan tehdä rinnakkain, eikä $P$ ole koskaan 0, sillä jokaisessa rinnakkaisessa laskennassa joudutaan luomaan säikeet, mikä on ainakin osittain peräkkäinen operaatio. Ottaen raja-arvon $N$:n kasvaessa rajatta, saadaan maksimaalinen (teoreettinen) nopeutus $1 / (1 - P)$.
+
+\section{Yhteenveto}
 
 \bibliographystyle{babplain-lf}
 \bibliography{refs}
