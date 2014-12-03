@@ -606,6 +606,7 @@ Varsinainen lyhimpien polkujen algoritmi suunnatuilla syklittömillä verkoilla 
 \SetKw{KwContinue}{continue}
 \SetKw{KwNoMap}{is not mapped in}
 \SetKw{KwIs}{is}
+\SetKw{KwOr}{or}
 $i = \mu(s)$ \\
 $j = \mu(t)$ \\
 $g = \{ (s, 0) \}$ \\
@@ -619,12 +620,8 @@ $\pi = \{ (s, \KwNil) \}$ \\
     \KwRet $\textsc{Traceback-Path}(u, \pi, \KwNil)$ \\
   }
   \ForEach{$(u, v) \in G.A$}{
-    \If{$v$ \KwNoMap $g$}{
+    \If{$v$ \KwNoMap $g$ \KwOr $g(v) > g(u) + w(u, v)$}{
       $g(v) = g(u) + w(u, v)$ \\
-      $\pi(v) = u$ \\
-    }
-    \ElseIf{$g(v) > g(u) + w(u, v)$}{
-      $g(v) = g(u)  + w(u, v)$ \\
       $\pi(v) = u$ \\
     }
   }
@@ -633,7 +630,7 @@ $\pi = \{ (s, \KwNil) \}$ \\
 \caption{\textsc{Dag-Shortest-Path}$(G, s, t, w, L, \mu)$}
 \label{alg:dagsp}
 \end{finalgo}
-Koska tässäkin yhteydessä halutaan rajoittua siten, ettei lasketa kokonaista lyhimpien polkujen puuta, vaan lopetetaan polunhaku heti kun päästetään maalisolmuun (engl. \textit{point-to-point shortest paths}), niin algoritmi \textsc{Dag-Shortest-Path} (Algoritmi \ref{alg:dagsp}) olettaa, että sille anetaan parametreina myös sekvenssi $L$, joka sisältää kaikki verkon solmut topologisessa järjestyksessä, ja kuvaus $\mu \colon V \to \{ 1, 2, \dots, |V| \}$, jolle $\mu(u)$ on solmun $u$ sijannin indeksi sekvenssissa $L$. Tämä järjestely säästää (toisinaan arvokasta) suoritusaikaa, $L$ ja $\mu$ on laskettava vain siinä vaiheessa, kun verkko on rakennettu tai sen topologia on muutettu. \textsc{Dag-Shortest-Path}-algoritmin testi rivillä 7 on tarpeen siinä tilanteessa, jossa testattavaan solmuun $u$ ei tule kaareja väliltä $L[\mu(s), \mu(u) - 1]$, jolloin se ei ole tallennettu $g$-kuvaukseen. Tällainen solmu on ohitettava, koska muuten jossakin riveistä 13, 15, 16 algoritmi lukee $g(u)$, mikä ei tule olemaan määritelty. Lisäksi, tällainen solmu $u$ ei voi olla saavutettavissa oleva maalisolmu, sillä muuten sen $g$-arvo olisi ollut määritelty ja rivin 9 testi menisi sillä solmulla läpi. Koska algorimti ei käytä aikaa solmujen järjestämiseen topologiseen järjestykseen, eikä rakenna kuvausta $\mu$, vaan olettaa niiden olevan valmiita käyttöön, on helpo nähdä sen aikavaativuuden olevan $\mathcal{O}(n + m)$. Vielä vahvempi ylläraja on kuitenkin $\mathcal{O}(d(\mu(t) - \mu(s)))$, missä $d$ on solmujen keskiarvoinen ulosaste.
+Koska tässäkin yhteydessä halutaan rajoittua siten, ettei lasketa kokonaista lyhimpien polkujen puuta, vaan lopetetaan polunhaku heti kun päästetään maalisolmuun (engl. \textit{point-to-point shortest paths}), niin algoritmi \textsc{Dag-Shortest-Path} (Algoritmi \ref{alg:dagsp}) olettaa, että sille anetaan parametreina myös sekvenssi $L$, joka sisältää kaikki verkon solmut topologisessa järjestyksessä, ja kuvaus $\mu \colon V \to \{ 1, 2, \dots, |V| \}$, jolle $\mu(u)$ on solmun $u$ sijannin indeksi sekvenssissa $L$. Tämä järjestely säästää (toisinaan arvokasta) suoritusaikaa, $L$ ja $\mu$ on laskettava vain siinä vaiheessa, kun verkko on rakennettu tai sen topologia on muutettu. \textsc{Dag-Shortest-Path}-algoritmin testi rivillä 7 on tarpeen siinä tilanteessa, jossa testattavaan solmuun $u$ ei tule kaareja väliltä $L[\mu(s), \mu(u) - 1]$, jolloin se ei ole tallennettu $g$-kuvaukseen. Tällainen solmu on ohitettava, koska muuten jossakin riveistä 12 tai 13 algoritmi lukee $g(u)$, mikä ei tule olemaan määritelty. Lisäksi, tällainen solmu $u$ ei voi olla saavutettavissa oleva maalisolmu, sillä muuten sen $g$-arvo olisi ollut määritelty ja rivin 9 testi menisi sillä solmulla läpi. Koska algorimti ei käytä aikaa solmujen järjestämiseen topologiseen järjestykseen, eikä rakenna kuvausta $\mu$, vaan olettaa niiden olevan valmiita käyttöön, on helpo nähdä sen aikavaativuuden olevan $\mathcal{O}(n + m)$. Vielä vahvempi ylläraja on kuitenkin $\mathcal{O}(d(\mu(t) - \mu(s)))$, missä $d$ on solmujen keskiarvoinen ulosaste.
 
 \section{Haku dynaamisilla verkoilla}
 Tähän asti käsitellyt verkot olivat staattisia: ne rakennetaan kerran ja niiden yli ajetaan useammat polunhakukyselyt, joiden palauttama lyhin polku riippuu vain lähtö- ja maalisolmuista. Dynaamisissa verkoissa lyhin polku riippuu myös siitä ajasta, jona lähdetään lähtösolmusta/saavutaan maalisolmuun ja tyypillisesti halutaan optimoida reittiin liittyvä ajankäyttö. Käytännön sovellus dynaamisista verkoista ja hakualgoritmista on Reittiopas-palvelu. Haku dynaamisilla verkoilla eroaa staattisesta versiosta myös siten, että painot liitetään myös solmuihin, jotka edustavat linja-auto-, raitiovaunupysäkkejä ja metroasemia. Esimerkiksi, jos Pekka saapuu hetkellä $\tau_{\text{Pekka}}$ lähimpään pysäkkiin $P$ odottamaan bussia, joka saapuu sinne hetkellä $\tau > \tau_{\text{Pekka}}$, liitetään dynaamisessa hakualgoritmissa $P$:tä edustaavaan solmuun paino $\tau - \tau_{\text{Pekka}}$. Toinen epätriviaali vaatimus on tilan säilyttäminen ja päivittäminen; saman tieosuuden voidaan joissain verkon kohdissa kulkea useammantyypisellä ajoneuvolla, ja lisäksi joillakin pysäkkeillä on tarpeen vaihtaa ajoneuvosta toiseen.
@@ -642,6 +639,7 @@ Vaikka verkon (ja myös algoritmin) dynaamisuus on väistämätön vaatimus kun 
 Dynaamisella algoritmilla on siis vain kaksi toimintatilaa: kun halutaan hakea lähtöajan perusteella, ajetaan yksisuuntainen haku ''normaalisti'' lähtösolmusta maalisolmuun. Toisaalta kun haetaan saapumisajan perusteella, algoritmi hakee ajassa ''taaksepäin'' lähtien maalisolmusta kunnes päättyy lähtösolmuun.
 
 \section{Lyhimmät polut ja rinnakkaisuus}
+\label{sec:parallel}
 Toistaiseksi lyhimpien polkujen haku ei ole juuri antanut paljon aihetta rinnakkaistamiseen. Vuonna 1998 Meyer ja Sanders esittivät $\Delta$-stepping -nimisen algoritminsa, joka asettaa kunkin saavutetun solmun $u$ omaan ''koriin'' (engl. \textit{bucket}) numero $i$ aina, kun $g(u) \in [(i - 1)\Delta, i\Delta)$, jolloin kukin säie käsittelee vain osan kaikista koreista. $2^{19}$ solmun verkolla, jonka keskiarvoinen aste on 3, Meyer ja Sanders raportoivat peräkkäisen (engl. \textit{sequential}) version olleen 3.1 kertaa nopeampi kuin ''optimoitu'' Dijkstran algoritmi, ja 16 suorittimen hajautetussa järjestelmässä nopeutus 9.2 on mitattu suhteessa peräkkäiseen $\Delta$-stepping -algoritmiin. On huomattava, että algoritminsa toiminta riippuu $\Delta$:n arvosta, ja Meyer et al. ehdottavat arvon $\Delta = 4/d$, missä $d$ on keskiarvoinen solmun aste.
 
 Rinnakkaistamiseen liittyvien käytännön ongelmista huolimatta, myös kaksisuuntaisen A$^{\ast}$:n variantti nimeltään NBA$\ast$ sai rinnakkaisen version: PNBA$\ast$ käyttää kaksi säiettä, kukin omaa hakusuuntaa varten, ja sisältää suhteellisen vähän synkronoinnin tarvetta \cite{Rios}. Esimerkiksi, 15-palapelillä (engl. \textit{15-puzzle}), NBA$\ast$ löysi lyhimmän 58 siirron polun noin 2.5 kertaa nopeammin kuin A$^{\ast}$, ja PNBA$\ast$ oli noin tasan kaksi kertaa nopeampi kuin NBA$\ast$.
@@ -653,6 +651,7 @@ On huomattava, että rinnakkaistaessa algoritmeja, ei ole mahdollista saada miel
 missä $N$ on suorittimien määrä ja $P \in (0, 1]$ on sen laskennan suhteellinen osuus, jota voidaan tehdä rinnakkain, eikä $P$ ole koskaan 0, sillä jokaisessa rinnakkaisessa laskennassa joudutaan luomaan säikeet, mikä on ainakin osittain peräkkäinen operaatio. Ottaen raja-arvon $N$:n kasvaessa rajatta, saadaan maksimaalinen (teoreettinen) nopeutus $1 / (1 - P)$.
 
 \section{Yhteenveto}
+Lyhimmän polun haku on hyvin käytännönläheinen ongelma ja siihen liittyvä kirjallisuus on melko laaja-alaista. Tehokkuutta tarkastellessa on useampi optimointimahdollisuus, joista ilmeisimmät ova kaksisuuntaistaminen, heuristinen haku, verkon esiprosessointi ja rinnakkaistaminen. Suurimman määrän nopeutustekniikkoita (3) käyttöönottava algoritmi (niiden algoritmien joukosta, joita tässä tutkielmassa on tarkasteltu) on NBA$\ast$ (Luku \ref{sec:parallel}) ja sekin käyttää rinnakkaisuutta hyvin triviaalisti. Toisaalta toisinaan on mahdollista rajoittua tietyntyyppiseen verkkoon ja käyttää hyväksi sen erikoisrakennetta kuten jump point -haussa tai syklittömien verkkojen polunhakualgoritmissa. Sovelluksissa paras algoritmi saattaa olla ad-hoc ratkaisu, joka ei ole sovellettavissa aihealueensa ulkopuolelle. Kaikki kaikkiaan, toistaiseksi ei näytä siltä, että on olemassa ''paras'' hakualgoritmi vaan jokainen on paras vain omassa tietyssä verkkojen osajoukossa.
 
 \bibliographystyle{babplain-lf}
 \bibliography{refs}
