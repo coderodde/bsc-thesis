@@ -598,12 +598,42 @@ Toinen varteenotettava MSA-algoritmi on Schroedlin kehittämä IDDP (engl. \text
 Schroedl vertaili IDDP:n, PEA$\ast$:n ja A$\ast$:n keskenään. Kahden gigatavun keskusmuistin koneella A$\ast$ pystyi rivittämään maksimissaan yhdeksän sekvenssiä, ja PEA$\ast$ vaatii vain noin yhden prosentin siitä muistitilasta ja kykenee rivittämään samalla alustalla 12 sekvenssiä. 12 sekvenssillä IDDP vaatii vain noin 67 prosenttiä PEA$\ast$:n laskenta-ajasta ja käyttää vain kuudennen osan siitä muistitilasta, mitä PEA$\ast$.
 
 \section{Lyhimmät polut suunnatuissa syklittömissä verkoissa}
-Suunnattu syklitön verkko (engl. \textit{dag, directed acyclic graph}) on verkko $G = (V, A)$, jossa ei ole mahdollista lähteä mielivaltaisesta solmusta $u$ seuraamalla suunatut kaaret ja päästää takaisin $u$:hun. Eräs sovellus on tilanne, jossa jokainen kaari $(u, v)$ vastaa jotakin tehtävää ja $w(u, v)$ sen kestoa. Lisäksi, jos verkossa on kaaret $(u, v)$ ja $(v, x)$, tehtävä $(u, v)$ edeltää ajassa tehtävää $(v, x)$. Niin sanottu \textit{kriittinen polku} yllä esitetyssä verkossa on suurimman kustannuksen omaava polku, joka kulkee syklittömän verkon läpi (siis solmusta, jonka sisäaste on nolla, solmuun, jonka ulosaste on nolla), ja siten se antaa yllärajan ajalle, jota vaaditaan suorittaa verkon kuvailemat tehtävät. Käytännössä tällaisen ''pisimmän polun'' voidaan aina laskea asettamalla jokaisella kaarella $e \in A$ $\hat{w}(e) = -w(e)$ ja ajamalla lyhimpien polkujen algoritmin käyttäen painofunktiona kuvauksen $\hat{w}$.
+Suunnattu syklitön verkko (engl. \textit{dag, directed acyclic graph}) on verkko $G = (V, A)$, jossa ei ole mahdollista lähteä mielivaltaisesta solmusta $u$ seuraamalla suunnatut kaaret ja päästää takaisin $u$:hun. Eräs sovellus on tilanne, jossa jokainen kaari $(u, v)$ vastaa jotakin tehtävää ja $w(u, v)$ sen kestoa. Lisäksi, jos verkossa on kaaret $(u, v)$ ja $(v, x)$, tehtävä $(u, v)$ edeltää ajassa tehtävää $(v, x)$. Niin sanottu \textit{kriittinen polku} yllä esitetyssä verkossa on suurimman kustannuksen omaava polku, joka kulkee syklittömän verkon läpi säilyttäen kaarien presedenssin, ja siten se antaa yllärajan ajalle, joka menee verkon kuvailemien tehtävien suoritukseen. Käytännössä tällaisen ''pisimmän polun'' voidaan aina laskea asettamalla jokaisella kaarella $e \in A$ $\hat{w}(e) = -w(e)$ ja ajamalla lyhimpien polkujen algoritmin käyttäen painofunktiona kuvausta $\hat{w}$.
 
-Varsinainen lyhimpien polkujen algoritmi suunnatuilla syklittömillä verkoilla ensin lajittelee solmut topologiseen järjestykseen, eli sellaisen järjestykseen, jossa jokaisesta solmusta $u$ lähtevät kaaret osoittavat solmuihin, jotka ovat $u$:n oikealla puolella. Nyt jos verkko on yhdistetty, sen topologisessa järjestyksessä ensimmäiseen solmuun ei tule kaareja ja järjestyksen viimeisestä solmusta ei lähde kaareja. Seuraavaksi algoritmi käy läpi järjestettyjen solmujen yli ja jokaisen kohdalla iteroi yli sen lapsisolmujen päivittäen tarvittaessa asionomaisten solmujen $g$- ja $\pi$-arvot, jotka siis antavat solmujen parhaat kustannukset lähtösolmusta ja vahnhemmat toistaiseksi lyhimmällä polulla, vastaavasti.
-
-\section{$k$ lyhimmät polut}
-Toisinaan lyhin $s, t$-polku ei ole riittävä, vaan halutaan löytää $k \in \mathbb{N}$ lyhintä $s, t$-polkua. Tällainen tarve voi tulla silloin kun vaaditaan kokonaisvaltaisempaa kuvaa verkkona muotoilemasta ilmiöstä. Esimerkiksi multiple sequence alignment -ongelmassa muutama optimaalein rivitys voi paljastaa enemmän informaatio kuin yksi, esimerkiksi siten, että muutamasta rivityksestä voi paljastua merkityksellinen malli. $k$ lyhimmät polut -ongelmalla on kuitenkin kaksi variaatiota: polut ovat syklittömiä (engl. \textit{simple}) tai poluissa sallitaan syklit. Eppsteinin mukaan ensimmäinen variantti on toista algoritmisesti ''vaikeampi'' \cite{Eppstein97} ja hän keskittyy toiseen esittäen algoritmin, joka toimii ajassa ja tilassa $\mathcal{O}(m + n \log n + k)$.
+Varsinainen lyhimpien polkujen algoritmi suunnatuilla syklittömillä verkoilla ensin lajittelee solmut topologiseen järjestykseen, eli sellaiseen järjestykseen, jossa jokaisesta solmusta $u$ lähtevät kaaret osoittavat solmuihin, jotka ovat $u$:n oikealla puolella. Nyt jos verkko on yhdistetty, sen topologisessa järjestyksessä ensimmäiseen solmuun ei tule kaareja ja järjestyksen viimeisestä solmusta ei lähde kaareja. Seuraavaksi algoritmi käy läpi järjestettyjen solmujen yli ja jokaisen kohdalla iteroi yli sen lapsisolmujen päivittäen tarvittaessa asionomaisten solmujen $g$- ja $\pi$-arvot, jotka siis antavat solmujen parhaat kustannukset lähtösolmusta ja vanhemmat toistaiseksi lyhimmällä polulla, vastaavasti.
+\begin{finalgo}[h]
+\SetKw{KwNil}{nil}
+\SetKw{KwContinue}{continue}
+\SetKw{KwNoMap}{is not mapped in}
+\SetKw{KwIs}{is}
+$i = \mu(s)$ \\
+$j = \mu(t)$ \\
+$g = \{ (s, 0) \}$ \\
+$\pi = \{ (s, \KwNil) \}$ \\
+\For{$k = i$ \KwTo $j$}{
+  $u = L[k]$ \\
+  \If{$u$ \KwNoMap $g$}{
+    \KwContinue \\
+  }
+  \If{$u$ \KwIs $t$}{
+    \KwRet $\textsc{Traceback-Path}(u, \pi, \KwNil)$ \\
+  }
+  \ForEach{$(u, v) \in A$}{
+    \If{$v$ \KwNoMap $g$}{
+      $g(v) = g(u) + w(u, v)$ \\
+      $\pi(v) = u$ \\
+    }
+    \ElseIf{$g(v) > g(u) + w(u, v)$}{
+      $g(v) = g(u)  + w(u, v)$ \\
+      $\pi(v) = u$ \\
+    }
+  }
+}
+\KwRet $\langle \rangle$ \\
+\caption{\textsc{Dag-Shortest-Path}$(G, s, t, w, L, \mu)$}
+\label{alg:dagsp}
+\end{finalgo}
+Koska tässäkin yhteydessä halutaan rajoittua siten, ettei lasketa kokonaista lyhimpien polkujen puuta, vaan lopetetaan polunhaku heti kun päästetään maalisolmuun (engl. \textit{point-to-point shortest paths}), niin algoritmi \textsc{Dag-Shortest-Path} (Algoritmi \ref{alg:dagsp}) olettaa, että sille anetaan parametreina myös sekvenssi $L$, joka sisältää kaikki verkon solmut topologisessa järjestyksessä, ja kuvaus $\mu \colon V \to \{ 1, 2, \dots, |V| \}$, jolle $\mu(u)$ on solmun $u$ sijannin indeksi sekvenssissa $L$. Tämä järjestely säästää (toisinaan arvokasta) suoritusaikaa, $L$ ja $\mu$ on laskettava vain siinä vaiheessa, kun verkko on rakennettu tai sen topologia on muutettu. \textsc{Dag-Shortest-Path}-algoritmin testi rivillä 7 on tarpeen siinä tilanteessa, jossa testattavaan solmuun $u$ ei tule kaareja välillä $L[\mu(s), \mu(u) - 1]$, jolloin se ei ole tallennettu $g$-kuvaukseen. Tällainen solmu on ohitettava, koska muuten jossakin riveistä 13, 15, 16 algoritmi lukee $g(u)$, mikä ei tule olemaan määritelty. Lisäksi, tällainen solmu $u$ ei voi olla saavutettavissa oleva maalisolmu, sillä muuten sen $g$-arvo olisi ollut määritelty ja rivin 9 testi menisi sillä solmulla läpi. Koska algorimti ei käytä aikaa solmujen järjestämiseen topologiseen järjestykseen, eikä rakenna kuvausta $\mu$, on helpo nähdä sen aikavaativuuden olevan $\mathcal{O}(n + m)$. Vielä vahvempi ylläraja on kuitenkin $\mathcal{O}(d(\mu(t) - \mu(s)))$, missä $d$ on solmujen keskiarvoinen ulosaste.
 
 \section{Haku dynaamisilla verkoilla}
 Tähän asti käsitellyt verkot olivat staattisia: ne rakennetaan kerran ja niiden yli ajetaan useammat polunhakukyselyt, joiden palauttama lyhin polku riippuu vain lähtö- ja maalisolmuista. Dynaamisissa verkoissa lyhin polku riippuu myös siitä ajasta, jona lähdetään lähtösolmusta/saavutaan maalisolmuun ja tyypillisesti halutaan optimoida reittiin liittyvä ajankäyttö. Käytännön sovellus dynaamisista verkoista ja hakualgoritmista on Reittiopas-palvelu. Haku dynaamisilla verkoilla eroaa staattisesta versiosta myös siten, että painot liitetään myös solmuihin, jotka edustavat linja-auto- tai raitiovaunupysäkkejä ja metroasemia. Esimerkiksi, jos Pekka saapuu hetkellä $\tau_{\text{Pekka}}$ lähimpään pysäkkiin $P$ odottamaan bussia, joka saapuu sinne hetkellä $\tau > \tau_{\text{Pekka}}$, liitetään dynaamisessa hakualgoritmissa $P$:tä edustaavaan solmuun paino $\tau - \tau_{\text{Pekka}}$. Toinen epätriviaali vaatimus on tilan säilyttäminen ja päivittäminen; saman tieosuuden voidaan joissain verkon kohdissa kulkea useammantyypisellä ajoneuvolla, ja lisäksi joillakin pysäkkeillä on tarpeen vaihtaa ajoneuvosta toiseen.
